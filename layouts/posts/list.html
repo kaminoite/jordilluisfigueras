@@ -1,0 +1,36 @@
+{{ define "main" }}
+  <h1>Posts</h1>
+
+  {{ $pages := .Pages.ByDate.Reverse }}
+  {{ if eq (len $pages) 0 }}
+    <p>No posts yet.</p>
+  {{ else }}
+    <div class="post-list">
+      {{ range $pages }}
+        <article class="post-item">
+          <h2>
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          </h2>
+
+          <p class="meta">{{ .Date.Format "2006-01-02" }} · {{ .ReadingTime }} min read</p>
+
+          {{ with .Params.tags }}
+            <p class="tags">
+              {{ range $index, $tag := . }}
+                {{ if gt $index 0 }} · {{ end }}
+                <a href="{{ printf "/tags/%s/" ($tag | urlize) | relURL }}">#{{ $tag }}</a>
+              {{ end }}
+            </p>
+          {{ end }}
+
+          {{ $plain := .Plain | strings.TrimSpace }}
+          {{ if gt (len $plain) 200 }}
+            <p>{{ slicestr $plain 0 200 }}…</p>
+          {{ else }}
+            <p>{{ $plain }}</p>
+          {{ end }}
+        </article>
+      {{ end }}
+    </div>
+  {{ end }}
+{{ end }}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Jordi Lluís Figueras - Posts</title>
+    <link>https://kaminoite.github.io/jordilluisfigueras/posts/</link>
+    <description>Blog posts on mathematics, computation, and teaching.</description>
+    <language>en-us</language>
+    <item>
+      <title>First post: how we did all this</title>
+      <link>https://kaminoite.github.io/jordilluisfigueras/posts/first-post/</link>
+      <guid>https://kaminoite.github.io/jordilluisfigueras/posts/first-post/</guid>
+      <pubDate>Wed, 25 Feb 2026 00:00:00 +0000</pubDate>
+      <description>How we built this section combining ChatGPT and Codex CLI, with the full implementation prompt.</description>
+    </item>
+  </channel>
+</rss>

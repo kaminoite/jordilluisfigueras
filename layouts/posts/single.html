@@ -1,0 +1,21 @@
+{{ define "main" }}
+  <article class="post-single">
+    <header>
+      <h1>{{ .Title }}</h1>
+      <p class="meta">{{ .Date.Format "2006-01-02" }} · {{ .ReadingTime }} min read</p>
+
+      {{ with .Params.tags }}
+        <p class="tags">
+          {{ range $index, $tag := . }}
+            {{ if gt $index 0 }} · {{ end }}
+            <a href="{{ printf "/tags/%s/" ($tag | urlize) | relURL }}">#{{ $tag }}</a>
+          {{ end }}
+        </p>
+      {{ end }}
+    </header>
+
+    <div class="post-content">
+      {{ .Content }}
+    </div>
+  </article>
+{{ end }}

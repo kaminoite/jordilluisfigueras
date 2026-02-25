@@ -1,0 +1,26 @@
+{{ define "main" }}
+  <section class="home">
+    <h1>{{ .Site.Title }}</h1>
+    {{ with .Site.Params.description }}
+      <p class="lead">{{ . }}</p>
+    {{ end }}
+    <p>
+      <a href="{{ "/posts/" | relURL }}">Read all posts →</a>
+    </p>
+  </section>
+
+  {{ $posts := where .Site.RegularPages "Section" "posts" }}
+  {{ if gt (len $posts) 0 }}
+    <section>
+      <h2>Latest posts</h2>
+      <ul class="post-list compact">
+        {{ range first 3 ($posts.ByDate.Reverse) }}
+          <li>
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            <span class="meta">{{ .Date.Format "2006-01-02" }} · {{ .ReadingTime }} min read</span>
+          </li>
+        {{ end }}
+      </ul>
+    </section>
+  {{ end }}
+{{ end }}
