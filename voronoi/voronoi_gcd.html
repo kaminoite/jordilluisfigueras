@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<meta charset="utf-8">
+<head>
+<meta name="description" content="Website short description." />
+<meta name="keywords" content="website main keywords" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Voronoi GCD</title>
+<link href="../style.css" rel="stylesheet" type="text/css" />
+<style>
+  .voronoiPanel
+  {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    align-items: center;
+    margin: 10px 0;
+  }
+  .voronoiPanel label
+  {
+    font-size: 14px;
+  }
+  .voronoiPanel input
+  {
+    width: 90px;
+    padding: 4px;
+  }
+  .voronoiPanel button
+  {
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  #info
+  {
+    margin: 8px 0 10px 0;
+    font-size: 14px;
+  }
+  #plot
+  {
+    border: 1px solid #999;
+    max-width: 100%;
+    height: auto;
+  }
+</style>
+</head>
+
+<body>
+
+<div id="container">
+
+<div id="header">Jordi-Llu&iacute;s Figueras personal website</div>
+
+<div id="sub_header">
+Voronoi diagram for lattice points with fixed gcd
+</div>
+
+<div id="main_content_top"></div>
+
+<div id="main_content">
+
+<div class="content">
+<h2>Voronoi diagram for lattice points with fixed gcd</h2>
+
+<p>
+Today I was having fika with <a href="https://math.washington.edu/people/jayadev-s-athreya">Jayadev S. Athreya</a> and he showed me very cool Voronoi diagrams.
+Fix an integer g. Then take a region on the plane and keep the integer points whose gcd is exactly g.
+Finally draw the Voronoi diagram of those points.
+</p>
+
+<p>
+I liked it so much that, after some experimentation, and with some help from my friend codex, I got the following applet.
+</p>
+
+<div class="voronoiPanel">
+  <label>x <input id="xValue" type="number" value="-10" /></label>
+  <label>y <input id="yValue" type="number" value="-10" /></label>
+  <label>deltax <input id="aValue" type="number" value="20" /></label>
+  <label>deltay <input id="bValue" type="number" value="20" /></label>
+  <label>gcd <input id="gValue" type="number" value="1" min="0" /></label>
+  <button id="computeBtn">Compute</button>
+  <button id="clearBtn">Clear</button>
+</div>
+
+<div id="info">Ready.</div>
+<canvas id="plot" width="900" height="700"></canvas>
+
+</div>
+
+<div class="menu">
+<a href="../index.html" class="menu_link">Go back to Main Page</a>
+</div>
+
+<div id="clear"></div>
+
+</div>
+
+<div id="main_content_bottom"></div>
+
+<div id="footer"><strong>Last update: 2026-02-26</strong> | Jordi-Llu&iacute;s Figueras</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3-delaunay@6/dist/d3-delaunay.min.js"></script>
+<script>
+  let currentResult = null;
+
+  function gcdAbs(a, b)
+  {
+    let x = Math.abs(a);
+    let y = Math.abs(b);
+
+    if(x === 0)
+    {
+      return y;
+    }
+    if(y === 0)
+    {
+      return x;
+    }
+    while(y !== 0)
+    {
+      const t = x % y;
+      x = y;
+      y = t;
+    }
+    return x;
+  }
+
+  function computePoints(xValue, yValue, aValue, bValue, gValue)
+  {
+    const xEnd = xValue + aValue;
+    const yEnd = yValue + bValue;
+    const xMin = Math.min(xValue, xEnd);
+    const xMax = Math.max(xValue, xEnd);
+    const yMin = Math.min(yValue, yEnd);
+    const yMax = Math.max(yValue, yEnd);
+
+    const pts = [];
+    for(let x = xMin; x <= xMax; ++x)
+    {
+      for(let y = yMin; y <= yMax; ++y)
+      {
+        if(gcdAbs(x, y) === gValue)
+        {
+          pts.push([x, y]);
+        }
+      }
+    }
+
+    return {
+      points: pts,
+      xMin,
+      xMax,
+      yMin,
+      yMax
+    };
+  }
+
+  function drawVoronoi(result)
+  {
+    const canvas = document.getElementById("plot");
+    const ctx = canvas.getContext("2d");
+    const width = canvas.width;
+    const height = canvas.height;
+    const pad = 30;
+    const innerWidth = width - 2 * pad;
+    const innerHeight = height - 2 * pad;
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, width, height);
+    ctx.beginPath();
+
+    const dx = Math.max(1, result.xMax - result.xMin);
+    const dy = Math.max(1, result.yMax - result.yMin);
+    const scale = Math.min(innerWidth / dx, innerHeight / dy);
+    const plotWidth = dx * scale;
+    const plotHeight = dy * scale;
+    const offsetX = (width - plotWidth) / 2;
+    const offsetY = (height - plotHeight) / 2;
+
+    function mapX(x)
+    {
+      return offsetX + (x - result.xMin) * scale;
+    }
+
+    function mapY(y)
+    {
+      return offsetY + (result.yMax - y) * scale;
+    }
+
+    const sx0 = offsetX;
+    const sx1 = offsetX + plotWidth;
+    const sy0 = offsetY;
+    const sy1 = offsetY + plotHeight;
+
+    ctx.strokeStyle = "#444";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(sx0, sy0, sx1 - sx0, sy1 - sy0);
+
+    if(result.points.length < 2)
+    {
+      return;
+    }
+
+    const screenPoints = result.points.map((p) => [mapX(p[0]), mapY(p[1])]);
+    const delaunay = d3.Delaunay.from(screenPoints);
+    const vor = delaunay.voronoi([sx0, sy0, sx1, sy1]);
+
+    ctx.strokeStyle = "#0055cc";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    vor.render(ctx);
+    ctx.stroke();
+  }
+
+  function computeAndDraw()
+  {
+    const xValue = parseInt(document.getElementById("xValue").value, 10);
+    const yValue = parseInt(document.getElementById("yValue").value, 10);
+    const aValue = parseInt(document.getElementById("aValue").value, 10);
+    const bValue = parseInt(document.getElementById("bValue").value, 10);
+    const gValue = parseInt(document.getElementById("gValue").value, 10);
+    const info = document.getElementById("info");
+    const canvas = document.getElementById("plot");
+    const ctx = canvas.getContext("2d");
+
+    currentResult = null;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+
+    if(Number.isNaN(xValue) || Number.isNaN(yValue) || Number.isNaN(aValue) || Number.isNaN(bValue) || Number.isNaN(gValue))
+    {
+      info.textContent = "Please enter valid integers.";
+      return;
+    }
+
+    if(gValue < 0)
+    {
+      info.textContent = "g must be >= 0.";
+      return;
+    }
+
+    currentResult = computePoints(xValue, yValue, aValue, bValue, gValue);
+
+    if(currentResult.points.length > 50000)
+    {
+      info.textContent = `Too many points (${currentResult.points.length}). Reduce box size.`;
+      currentResult = null;
+      return;
+    }
+
+    drawVoronoi(currentResult);
+
+    info.textContent = `Rectangle [${currentResult.xMin}, ${currentResult.xMax}] x [${currentResult.yMin}, ${currentResult.yMax}], gcd = ${gValue}, points = ${currentResult.points.length}`;
+  }
+
+  function clearPlot()
+  {
+    const canvas = document.getElementById("plot");
+    const ctx = canvas.getContext("2d");
+    const info = document.getElementById("info");
+
+    currentResult = null;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    info.textContent = "Plot cleared. Points cache reset.";
+  }
+
+  document.getElementById("computeBtn").addEventListener("click", computeAndDraw);
+  document.getElementById("clearBtn").addEventListener("click", clearPlot);
+  computeAndDraw();
+</script>
+
+</body>
+
+</html>
