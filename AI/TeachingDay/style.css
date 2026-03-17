@@ -117,6 +117,26 @@ a:hover {
   margin: 10px auto;
 }
 
+.hero-figure {
+  margin: 20px auto 24px auto;
+  max-width: 700px;
+  text-align: center;
+}
+
+.hero-figure img {
+  width: 100%;
+  max-width: 700px;
+  height: auto;
+  display: block;
+  margin: 0 auto 10px auto;
+  border: 1px solid #8C8484;
+}
+
+.image-credit {
+  font-size: 13px;
+  color: #555555;
+}
+
 .qr-box {
   margin: 20px auto;
   width: 280px;
