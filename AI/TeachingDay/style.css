@@ -71,9 +71,10 @@ a:hover {
 .content {
   float: left;
   width: 68%;
-  text-align: justify;
+  text-align: left;
   padding: 0 30px 10px 30px;
   font-size: 16px;
+  line-height: 1.5;
 }
 
 .menu {
@@ -81,7 +82,7 @@ a:hover {
   float: right;
   padding: 0 20px 0 20px;
   border-left: #8C8484 1px solid;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .menu_title {
@@ -105,6 +106,14 @@ a:hover {
 .content h2,
 .content h3 {
   color: #A40008;
+}
+
+.topnav {
+  margin: 0 0 20px 0;
+  padding: 10px 12px;
+  background: #F4F1F1;
+  border-left: 4px solid #A40008;
+  font-size: 14px;
 }
 
 .hero {
@@ -177,13 +186,13 @@ a:hover {
   width: 240px;
   margin: 0 0 20px 20px;
   padding: 12px;
-  border: 1px solid #D8C9C9;
-  background: #FFF8F1;
+  border: 1px solid #C8B7B7;
+  background: #FFF6EC;
   font-size: 13px;
 }
 
 .activity-card {
-  border: 1px solid #D7D7D7;
+  border: 1px solid #D0D0D0;
   padding: 14px 16px;
   margin: 16px 0;
   background: #FCFCFC;
@@ -208,11 +217,29 @@ a:hover {
   white-space: pre-wrap;
 }
 
+.warning-box {
+  margin: 16px 0;
+  padding: 12px;
+  border: 1px solid #D7B86A;
+  background: #FFF8E1;
+}
+
+.checklist-box {
+  margin: 16px 0;
+  padding: 12px 14px;
+  border: 1px solid #D7D7D7;
+  background: #F9F9F9;
+}
+
 .backlinks {
   margin-top: 25px;
 }
 
 @media(max-width: 900px) {
+  #container {
+    width: 94%;
+  }
+
   .content,
   .menu,
   .corner-note {
@@ -224,5 +251,9 @@ a:hover {
 
   .menu {
     padding: 0 30px 20px 30px;
+  }
+
+  .qr-box {
+    width: auto;
   }
 }
