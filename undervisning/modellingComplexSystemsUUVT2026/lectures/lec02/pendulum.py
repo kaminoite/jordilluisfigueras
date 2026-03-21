@@ -14,6 +14,18 @@
  *
 """
 
+"""Animated damped pendulum with phase portrait.
+
+This script combines:
+
+1. numerical integration of the pendulum ODE,
+2. a phase-portrait visualization,
+3. the physical motion of the pendulum.
+
+The pedagogical core is the passage from the differential equation to a
+numerical trajectory using the Runge--Kutta method.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -37,35 +49,37 @@ t = np.arange(0, t_max + dt, dt)
 #   omega' = -(g/L) sin(theta) - b omega
 # -----------------------------
 def f(theta, omega):
-    dtheta = omega
-    domega = -(g / L) * np.sin(theta) - b * omega
-    return dtheta, domega
+  """Return the right-hand side of the pendulum ODE."""
+  dtheta = omega
+  domega = -(g / L) * np.sin(theta) - b * omega
+  return dtheta, domega
 
 # -----------------------------
 # RK4 integrator
 # -----------------------------
 def rk4_step(theta, omega, dt):
-    k1_theta, k1_omega = f(theta, omega)
+  """Advance the pendulum state by one RK4 time step."""
+  k1_theta, k1_omega = f(theta, omega)
 
-    k2_theta, k2_omega = f(
-        theta + 0.5 * dt * k1_theta,
-        omega + 0.5 * dt * k1_omega
-    )
+  k2_theta, k2_omega = f(
+    theta + 0.5 * dt * k1_theta,
+    omega + 0.5 * dt * k1_omega
+  )
 
-    k3_theta, k3_omega = f(
-        theta + 0.5 * dt * k2_theta,
-        omega + 0.5 * dt * k2_omega
-    )
+  k3_theta, k3_omega = f(
+    theta + 0.5 * dt * k2_theta,
+    omega + 0.5 * dt * k2_omega
+  )
 
-    k4_theta, k4_omega = f(
-        theta + dt * k3_theta,
-        omega + dt * k3_omega
-    )
+  k4_theta, k4_omega = f(
+    theta + dt * k3_theta,
+    omega + dt * k3_omega
+  )
 
-    theta_next = theta + (dt / 6.0) * (k1_theta + 2*k2_theta + 2*k3_theta + k4_theta)
-    omega_next = omega + (dt / 6.0) * (k1_omega + 2*k2_omega + 2*k3_omega + k4_omega)
+  theta_next = theta + (dt / 6.0) * (k1_theta + 2 * k2_theta + 2 * k3_theta + k4_theta)
+  omega_next = omega + (dt / 6.0) * (k1_omega + 2 * k2_omega + 2 * k3_omega + k4_omega)
 
-    return theta_next, omega_next
+  return theta_next, omega_next
 
 # -----------------------------
 # Solve trajectory
@@ -76,7 +90,7 @@ theta[0] = theta0
 omega[0] = omega0
 
 for i in range(len(t) - 1):
-    theta[i+1], omega[i+1] = rk4_step(theta[i], omega[i], dt)
+  theta[i + 1], omega[i + 1] = rk4_step(theta[i], omega[i], dt)
 
 # Wrap angle for cleaner phase portrait visualization
 theta_wrapped = (theta + np.pi) % (2 * np.pi) - np.pi
@@ -105,8 +119,8 @@ DOMn = DOM / M
 # -----------------------------
 # Figure setup
 # -----------------------------
-fig = plt.figure(figsize=(12, 6))
-gs = fig.add_gridspec(1, 2, width_ratios=[1.25, 1])
+fig = plt.figure(figsize = (12, 6))
+gs = fig.add_gridspec(1, 2, width_ratios = [1.25, 1])
 
 ax_phase = fig.add_subplot(gs[0, 0])
 ax_pend = fig.add_subplot(gs[0, 1])
@@ -119,7 +133,7 @@ ax_phase.contour(
     colors = '0.75',
     linewidths = 1.0
 )
-ax_phase.quiver(TH, OM, DTHn, DOMn, M, pivot='mid', alpha=0.7)
+ax_phase.quiver(TH, OM, DTHn, DOMn, M, pivot = 'mid', alpha = 0.7)
 ax_phase.set_title("Phase portrait of the pendulum")
 ax_phase.set_xlabel(r"$\theta$")
 ax_phase.set_ylabel(r"$\omega$")
@@ -128,8 +142,8 @@ ax_phase.set_ylim(-8, 8)
 ax_phase.grid(True)
 
 # Equilibria markers
-ax_phase.plot([0], [0], 'ko', ms=6)
-ax_phase.plot([np.pi, -np.pi], [0, 0], 'ks', ms=5, alpha=0.6)
+ax_phase.plot([0], [0], 'ko', ms = 6)
+ax_phase.plot([np.pi, -np.pi], [0, 0], 'ks', ms = 5, alpha = 0.6)
 
 # Trajectory and moving point
 traj_line, = ax_phase.plot([], [], lw=2)
@@ -148,52 +162,54 @@ ax_pend.plot(0, 0, 'ko', ms=8)
 rod_line, = ax_pend.plot([], [], lw=3)
 bob_point, = ax_pend.plot([], [], 'o', ms=16)
 time_text = ax_pend.text(
-    0.02, 0.95, "", transform=ax_pend.transAxes,
-    ha='left', va='top'
+    0.02, 0.95, "", transform = ax_pend.transAxes,
+    ha = 'left', va = 'top'
 )
 
 # Optional angle history text
 state_text = ax_phase.text(
-    0.02, 0.95, "", transform=ax_phase.transAxes,
-    ha='left', va='top',
-    bbox=dict(facecolor='white', alpha=0.8, edgecolor='none')
+    0.02, 0.95, "", transform = ax_phase.transAxes,
+    ha = 'left', va = 'top',
+    bbox = dict(facecolor = 'white', alpha = 0.8, edgecolor = 'none')
 )
 
 # -----------------------------
 # Animation functions
 # -----------------------------
 def init():
-    traj_line.set_data([], [])
-    traj_point.set_data([], [])
-    rod_line.set_data([], [])
-    bob_point.set_data([], [])
-    time_text.set_text("")
-    state_text.set_text("")
-    return traj_line, traj_point, rod_line, bob_point, time_text, state_text
+  """Reset the animated artists."""
+  traj_line.set_data([], [])
+  traj_point.set_data([], [])
+  rod_line.set_data([], [])
+  bob_point.set_data([], [])
+  time_text.set_text("")
+  state_text.set_text("")
+  return traj_line, traj_point, rod_line, bob_point, time_text, state_text
 
 def update(frame):
-    # Phase portrait update
-    traj_line.set_data(theta_wrapped[:frame+1], omega[:frame+1])
-    traj_point.set_data([theta_wrapped[frame]], [omega[frame]])
+  """Advance the animation to the requested time frame."""
+  # Phase portrait update
+  traj_line.set_data(theta_wrapped[:frame + 1], omega[:frame + 1])
+  traj_point.set_data([theta_wrapped[frame]], [omega[frame]])
 
-    # Pendulum coordinates
-    x = L * np.sin(theta[frame])
-    y = -L * np.cos(theta[frame])
+  # Pendulum coordinates in Cartesian form.
+  x = L * np.sin(theta[frame])
+  y = -L * np.cos(theta[frame])
 
-    rod_line.set_data([0, x], [0, y])
-    bob_point.set_data([x], [y])
+  rod_line.set_data([0, x], [0, y])
+  bob_point.set_data([x], [y])
 
-    time_text.set_text(f"t = {t[frame]:.2f} s")
-    state_text.set_text(
-        rf"$\theta = {theta_wrapped[frame]:.2f}$ rad" "\n"
-        rf"$\omega = {omega[frame]:.2f}$ rad/s"
-    )
+  time_text.set_text(f"t = {t[frame]:.2f} s")
+  state_text.set_text(
+    rf"$\theta = {theta_wrapped[frame]:.2f}$ rad" "\n"
+    rf"$\omega = {omega[frame]:.2f}$ rad/s"
+  )
 
-    return traj_line, traj_point, rod_line, bob_point, time_text, state_text
+  return traj_line, traj_point, rod_line, bob_point, time_text, state_text
 
 ani = FuncAnimation(
-    fig, update, frames=len(t),
-    init_func=init, interval=1000 * dt, blit=True
+    fig, update, frames = len(t),
+    init_func = init, interval = 1000 * dt, blit = True
 )
 
 plt.tight_layout()

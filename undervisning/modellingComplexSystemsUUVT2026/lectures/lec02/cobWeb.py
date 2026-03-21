@@ -14,6 +14,20 @@
  *
 """
 
+"""Interactive cobweb diagram for the logistic map.
+
+This script is intended for classroom use.  It combines two complementary
+views of the same discrete dynamical system:
+
+1. the cobweb construction in the plane (x_n, x_{n+1}),
+2. the orbit x_n as a function of the iteration index n.
+
+The main pedagogical ideas are:
+  - one-step iteration of the logistic map,
+  - repeated forward iteration from an initial condition,
+  - visual comparison between the graph of the map and the time series.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -30,25 +44,23 @@ nSteps = 60
 # Logistic map
 # -----------------------------
 def f(x):
-    return r * x * (1.0 - x)
+  """Return one step of the logistic map."""
+  return r * x * (1.0 - x)
 
 def solveOrbit():
-    x = np.zeros(nSteps + 1)
-    x[0] = x0
+  """Compute the forward orbit starting from x0."""
+  x = np.zeros(nSteps + 1)
+  x[0] = x0
 
-    for i in range(nSteps):
-        x[i + 1] = f(x[i])
+  for i in range(nSteps):
+    x[i + 1] = f(x[i])
 
-    return x
+  return x
 
 # -----------------------------
-# Solve trajectory
+# Initial orbit and data used for plotting
 # -----------------------------
 x = solveOrbit()
-
-# -----------------------------
-# Data for plots
-# -----------------------------
 xGrid = np.linspace(0.0, 1.0, 600)
 yGrid = f(xGrid)
 nGrid = np.arange(nSteps + 1)
@@ -110,54 +122,57 @@ rSlider = Slider(axSlider, r"$r$", 0.0, 4.0, valinit = r, valstep = 0.01)
 # Animation functions
 # -----------------------------
 def init():
-    cobLine.set_data([], [])
-    cobPoint.set_data([], [])
-    orbitLine.set_data([], [])
-    orbitPoint.set_data([], [])
-    stateText.set_text("")
-    return cobLine, cobPoint, orbitLine, orbitPoint, stateText, paramText
+  """Reset the animated artists."""
+  cobLine.set_data([], [])
+  cobPoint.set_data([], [])
+  orbitLine.set_data([], [])
+  orbitPoint.set_data([], [])
+  stateText.set_text("")
+  return cobLine, cobPoint, orbitLine, orbitPoint, stateText, paramText
 
 def update(frame):
-    xPath = [x[0], x[0]]
-    yPath = [0.0, x[1]]
+  """Advance the animation to the requested frame."""
+  xPath = [x[0], x[0]]
+  yPath = [0.0, x[1]]
 
-    for i in range(1, frame + 1):
-        xPath.extend([x[i], x[i]])
-        yPath.extend([x[i], x[i + 1]])
+  for i in range(1, frame + 1):
+    xPath.extend([x[i], x[i]])
+    yPath.extend([x[i], x[i + 1]])
 
-    cobLine.set_data(xPath, yPath)
-    cobPoint.set_data([x[frame]], [x[frame + 1]])
+  cobLine.set_data(xPath, yPath)
+  cobPoint.set_data([x[frame]], [x[frame + 1]])
 
-    orbitLine.set_data(nGrid[:frame + 2], x[:frame + 2])
-    orbitPoint.set_data([frame + 1], [x[frame + 1]])
+  orbitLine.set_data(nGrid[:frame + 2], x[:frame + 2])
+  orbitPoint.set_data([frame + 1], [x[frame + 1]])
 
-    stateText.set_text(
-        rf"$n = {frame + 1:d}$" "\n"
-        rf"$x_n = {x[frame]:.4f}$" "\n"
-        rf"$x_{{n+1}} = {x[frame + 1]:.4f}$"
-    )
+  stateText.set_text(
+    rf"$n = {frame + 1:d}$" "\n"
+    rf"$x_n = {x[frame]:.4f}$" "\n"
+    rf"$x_{{n+1}} = {x[frame + 1]:.4f}$"
+  )
 
-    return cobLine, cobPoint, orbitLine, orbitPoint, stateText, paramText
+  return cobLine, cobPoint, orbitLine, orbitPoint, stateText, paramText
 
 def updateParameter(_):
-    global r
-    global x
-    global yGrid
+  """Recompute the orbit when the parameter r changes."""
+  global r
+  global x
+  global yGrid
 
-    r = rSlider.val
-    x = solveOrbit()
-    yGrid = f(xGrid)
+  r = rSlider.val
+  x = solveOrbit()
+  yGrid = f(xGrid)
 
-    mapLine.set_data(xGrid, yGrid)
-    paramText.set_text(
-        rf"$r = {r:.2f}$" "\n" rf"$x_0 = {x0:.2f}$"
-    )
+  mapLine.set_data(xGrid, yGrid)
+  paramText.set_text(
+    rf"$r = {r:.2f}$" "\n" rf"$x_0 = {x0:.2f}$"
+  )
 
-    init()
-    ani.event_source.stop()
-    ani.frame_seq = ani.new_frame_seq()
-    fig.canvas.draw_idle()
-    ani.event_source.start()
+  init()
+  ani.event_source.stop()
+  ani.frame_seq = ani.new_frame_seq()
+  fig.canvas.draw_idle()
+  ani.event_source.start()
 
 ani = FuncAnimation(
     fig, update, frames = nSteps,
