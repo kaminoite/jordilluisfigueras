@@ -313,19 +313,38 @@ def styleCheckButtons(checkboxAxes, checkbox):
   for spine in checkboxAxes.spines.values():
     spine.set_visible(False)
 
-  for rectangle in checkbox.rectangles:
-    rectangle.set_facecolor('white')
-    rectangle.set_edgecolor('#666666')
-    rectangle.set_linewidth(1.0)
+  if hasattr(checkbox, 'set_frame_props'):
+    checkbox.set_frame_props({
+      'facecolor': ['white'],
+      'edgecolor': ['#666666'],
+      'linewidth': [1.0]
+    })
+  elif hasattr(checkbox, 'rectangles'):
+    for rectangle in checkbox.rectangles:
+      rectangle.set_facecolor('white')
+      rectangle.set_edgecolor('#666666')
+      rectangle.set_linewidth(1.0)
 
-  for lineGroup in checkbox.lines:
-    for line in lineGroup:
-      line.set_color('C3')
-      line.set_linewidth(2.0)
+  if hasattr(checkbox, 'set_check_props'):
+    checkbox.set_check_props({
+      'color': ['C3'],
+      'linewidth': [2.0]
+    })
+  elif hasattr(checkbox, 'lines'):
+    for lineGroup in checkbox.lines:
+      for line in lineGroup:
+        line.set_color('C3')
+        line.set_linewidth(2.0)
 
-  for label in checkbox.labels:
-    label.set_fontsize(9)
-    label.set_color('#222222')
+  if hasattr(checkbox, 'set_label_props'):
+    checkbox.set_label_props({
+      'fontsize': [9],
+      'color': ['#222222']
+    })
+  else:
+    for label in checkbox.labels:
+      label.set_fontsize(9)
+      label.set_color('#222222')
 
 
 
@@ -496,7 +515,6 @@ def main():
   pdfButton.on_clicked(savePdf)
 
   plt.show()
-
 
 
 if __name__ == "__main__":
