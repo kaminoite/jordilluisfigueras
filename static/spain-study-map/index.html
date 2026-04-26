@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spain Study Map</title>
+  <link rel="stylesheet" href="assets/css/spain-study-map.css">
+</head>
+<body>
+  <main class="page">
+    <header class="site-header">
+      <p class="breadcrumb"><a href="../">Jordi-Lluís Figueras</a> / Learning</p>
+      <h1 id="app-title">Spain Study Map</h1>
+      <p id="subtitle" class="subtitle">Study Spain's autonomous communities and provinces.</p>
+
+      <div class="toolbar" aria-label="Controls">
+        <div class="language-controls" aria-label="Language">
+          <button class="lang" id="lang_en" type="button">English</button>
+          <button class="lang" id="lang_es" type="button">Español</button>
+          <button class="lang" id="lang_ca" type="button">Català</button>
+        </div>
+
+        <nav class="mode-controls" aria-label="Study modes">
+          <button id="study_communities" type="button">Study communities</button>
+          <button id="study_provinces" type="button">Study provinces</button>
+          <button id="quiz_communities" type="button">Quiz 5 communities</button>
+          <button id="quiz_provinces" type="button">Quiz 8 provinces</button>
+        </nav>
+      </div>
+    </header>
+
+    <section class="app-grid">
+      <section class="map-panel" aria-label="Interactive map">
+        <svg id="map" viewBox="0 0 960 620" role="img" aria-label="Clickable map of Spain"></svg>
+      </section>
+
+      <aside id="side-panel" class="side-panel" aria-live="polite"></aside>
+    </section>
+
+  </main>
+
+  <script src="assets/vendor/d3.v7.min.js"></script>
+  <script src="assets/vendor/topojson-client.min.js"></script>
+  <script src="assets/vendor/d3-composite-projections.min.js"></script>
+  <script src="assets/data/provinces.js"></script>
+  <script src="assets/js/spain-study-map.js"></script>
+</body>
+</html>
