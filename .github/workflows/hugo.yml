@@ -37,6 +37,14 @@ jobs:
       - name: Build site
         run: hugo --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
 
+      - name: Add static website files
+        run: |
+          rsync -a \
+            index.html publications.html style.css \
+            css images preprints undervisning AI fftw_tutorial interesting skola spain-study-map voronoi \
+            Linkoping_Nov24.pdf lib_TorKam_2.0.0.tar.gz \
+            public/
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
