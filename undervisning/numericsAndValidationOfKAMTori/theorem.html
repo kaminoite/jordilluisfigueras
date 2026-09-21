@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Validation theorem — Numerics and validation of KAM tori, Kraków 2026, Jordi-Lluís Figueras.">
+  <title>Validation theorem | Numerics and validation of KAM tori</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="course.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div id="container">
+  <div id="header">Jordi-Lluís Figueras personal website</div>
+  <div id="sub_header">Numerics and validation of KAM tori</div>
+  <div id="main_content_top"></div>
+  <div id="main_content">
+    <main class="content">
+      <p><a href="../../index.html">Home</a> / <a href="index.html">KAM course</a></p>
+      <div class="notice"><strong>Working directory:</strong> run this guide’s commands from <code>toWebSite/codes/validation/</code>, unless stated otherwise. <a href="getting-started.html">Setup and complete workflow</a> · <a href="codes/validation/THEOREM.md">Original Markdown</a>.</div><h1 id="mathematical-contract-and-theorem-to-code-map">Mathematical contract and theorem-to-code map</h1>
+<h2 id="scope-and-conventions">1. Scope and conventions</h2>
+<p>The target is Theorem 2.18 of Figueras–Haro (2024), specialized using Remarks 2.20–2.21 to <code>d=n=2</code>, no additional first integrals, canonical geometry, and Diophantine exponent <code>tau=1</code>. The angle-action/affine-lift adaptation is the one described in the paper’s Section 2.2.</p>
+<p>Ambient coordinates are unchanged from KAMExample: <code>z=(phi1,phi2,I1,I2)</code>, with the physical angles of period <code>2 pi</code>. For the paper’s conventions choose</p>
+<p><span class="math display">\[
+\Omega=J_p=\begin{pmatrix}0&amp;-I_2\\ I_2&amp;0\end{pmatrix},\quad
+G=I_4,\quad \alpha=I\cdot d\varphi,\quad
+\Omega=d\alpha,\quad X_H=\Omega^{-1}\nabla H.
+\]</span></p>
+<p>Here the displayed matrix represents the two-form. Thus the vector field is <code>(partial_I H,-partial_phi H)</code>, as in the numerical example. All constant geometry norms are 1, their derivative bounds are 0, all additional-integral bounds are 0, and <code>c_DPhi=1</code>.</p>
+<p>Only the <strong>parameter</strong> is changed to the paper’s unit torus:</p>
+<p><span class="math display">\[
+x=\theta/(2\pi),\qquad
+K(x)=(2\pi x+u(2\pi x),\omega_r+v(2\pi x)),\qquad
+\omega=\omega_r/(2\pi).
+\]</span></p>
+<p>Consequently</p>
+<p><span class="math display">\[
+L=D_xK=2\pi D_\theta K,\quad
+\rho=\rho_r/(2\pi),\quad
+\rho_\infty=\rho_{\infty,r}/(2\pi),\quad
+\delta=(\rho-\rho_\infty)/6.
+\]</span></p>
+<p>The substep cuts have ratio <code>1/2</code>; an iteration spends <code>3 delta_j</code>, so the limiting width is exactly <code>rho_infinity</code>. The constants use <code>a=2</code>. Ambient coordinates, domain distances, the Hamiltonian and its derivatives are not rescaled. Averages have normalization <code>1/M^2</code>, with no additional <code>2 pi</code> factor.</p>
+<h2 id="exact-candidate-and-arithmetic">2. Exact candidate and arithmetic</h2>
+<p>All retained Fourier coefficients are exact dyadics; both Nyquist lines are zero and conjugate symmetry holds exactly. <code>validateCandidate()</code> enforces this contract, including for direct calls to the bounds API. The action offset is the exact algebraic frequency. The candidate is therefore a specified real analytic embedding once injectivity has been checked.</p>
+<p>MPFI encloses real quantities; complex numbers are pairs of real intervals. Every proof operation uses these intervals. <code>upper()</code> deliberately replaces an interval evaluation of a bound by an exact dyadic majorant. <code>lower()</code> is used for distances and positive gaps. No ambiguous interval order is used: strict tests compare an upper endpoint with a lower endpoint. Division by an interval containing zero, empty intervals, NaNs and infinities cannot pass a proof test.</p>
+<p>The numerical proposal stage may take midpoints and freeze coefficients. Its output is a new candidate, not a claimed enclosure of an unknown exact torus. The subsequent certification is independent of the numerical proposal.</p>
+<h2 id="diophantine-and-rüssmann-bounds">3. Diophantine and Rüssmann bounds</h2>
+<p>Put <code>phi=(1+sqrt(5))/2</code> and <code>psi=(1-sqrt(5))/2</code>. For nonzero integer <code>(p,q)</code>,</p>
+<p><span class="math display">\[
+(p+q\phi)(p+q\psi)=p^2+pq-q^2\in\mathbb Z\setminus\{0\},\qquad
+|p+q\psi|\le |p|+|q|.
+\]</span></p>
+<p>Thus <code>omega_r=(1,phi)</code> satisfies <code>|k.omega_r| &gt;= 1/|k|_1</code> for <strong>every</strong> nonzero integer mode. In unit-parameter coordinates,</p>
+<p><span class="math display">\[
+\gamma=1/(2\pi),\qquad\tau=1.
+\]</span></p>
+<p>No finite scan of divisors is used as a replacement for this argument.</p>
+<p>Lemma 2.14 and Corollary 2.15 specialize to the uniform constants</p>
+<p><span class="math display">\[
+\widehat c_R
+=\sqrt{\frac{2^3\zeta(2,2)\Gamma(3)}{(2\pi)^4}}
+=\frac{\sqrt{\pi^2/6-1}}{\pi^2},\qquad
+\widehat c_R^1=4\widehat c_R.
+\]</span></p>
+<p>These hold at every strip loss used in the infinite iteration. Both are evaluated with outward rounding, rather than approximated by finite divisor sums. <code>c_R</code> and <code>c_R1</code> in the report are their computed upper bounds.</p>
+<h2 id="norms-gram-inverse-and-embedding">4. Norms, Gram inverse, and embedding</h2>
+<p>Scalar functions use strip sup norms. Matrix bounds follow the paper’s norm</p>
+<p><span class="math display">\[
+\|A\|_\rho=\max_i\sum_j\sup_{|\Im\theta_\ell|\le\rho}|A_{ij}(\theta)|.
+\]</span></p>
+<p>Each finite polynomial is bounded by its weighted Fourier sum. Derivative coefficients are exactly <code>ik_j c_k</code> in radians. Matrix transpose norms are bounded separately; a vector and its transpose do not have the same norm.</p>
+<p>Writing <code>U=D_theta u</code> and <code>V=D_theta v</code>,</p>
+<p><span class="math display">\[
+L^TL=(2\pi)^2\left(I+U+U^T+U^TU+V^TV\right).
+\]</span></p>
+<p>At both the initial and wider strips the code checks</p>
+<p><span class="math display">\[
+r_B=b_U+b_{U^T}+b_{U^T}b_U+b_{V^T}b_V&lt;1.
+\]</span></p>
+<p>The Banach-algebra Neumann series gives a holomorphic inverse throughout the strip, with</p>
+<p><span class="math display">\[
+b_B=\frac1{(2\pi)^2(1-r_B)},\qquad
+b_N\le b_L b_B,\qquad b_{N^T}\le b_B b_{L^T},\qquad N=J_pLB.
+\]</span></p>
+<p>This is a <strong>transpose</strong> Gram matrix, not a Hermitian matrix. Its inverse is symmetric, so <code>B</code> and <code>B^T</code> share the same norm bound.</p>
+<p>The additional sufficient test <code>||D_theta u|| &lt; 1</code> makes the angular map <code>theta+u(theta)</code> injective modulo the period lattice: apply the Lipschitz estimate on the convex universal-cover strip, translating one point by a lattice element if necessary. This proves embedding, not just immersion. At the limit the code checks</p>
+<p><span class="math display">\[
+b_{D_\theta u}+r_{D_xK}/(2\pi)&lt;1.
+\]</span></p>
+<h2 id="explicit-domains-and-hamiltonian-bounds-h1">5. Explicit domains and Hamiltonian bounds (H1)</h2>
+<p>The complex domain <code>U0</code> is defined by <code>|Im phi_i| &lt; R0_i</code> and <code>|I_i| &lt; R0_(i+2)</code>. Its radii are upward-rounded bounds on the corresponding candidate components, enlarged by <code>domainMargin</code>. The outer extension domain <code>U</code> has another <code>domainMargin</code> of reserve. The record contains all eight radii and a lower bound for <code>dist(K(T_rho), boundary U0)</code>.</p>
+<p>For the literal functional-independence assumption in the theorem’s real setting, use the <strong>real slice of U0 intersected with <code>I1&gt;0</code></strong>. The code checks</p>
+<p><span class="math display">\[
+I_1\ge1-\|v_1\|_\rho&gt;0,
+\qquad 1-\|v_1\|_\rho-r_K&gt;0.
+\]</span></p>
+<p>Since <code>partial H/partial I1 = I1</code>, the Hamiltonian is regular there. The total displacement bound keeps the real iteration and its limit in this regular domain. The normal intermediate displacement is also dominated by the full one-step majorant. The larger complex analytic-extension domains are allowed to contain critical points.</p>
+<p>Let <code>S=max(cosh R1,cosh R2)</code>, <code>M=cosh(R1+R2)</code> for the outer angular radii. Then the implementation uses</p>
+<p><span class="math display">\[
+\begin{aligned}
+c_X&amp;=\max(R_{I_1},R_{I_2},|\epsilon|(S+M)),\\
+c_{DX}=c_{DX^T}&amp;=\max(1,|\epsilon|(S+2M)),\\
+c_{D^2X}&amp;=|\epsilon|(S+4M),\\
+c_{T_H}&amp;=1+|\epsilon|(S+2M),\qquad c_{DT_H}=c_{D^2X}.
+\end{aligned}
+\]</span></p>
+<p>These are componentwise derivative-sum bounds as required by H1. The equal transpose bound for <code>DX</code> follows from the symmetry of the force Jacobian.</p>
+<h2 id="the-theorems-torsion-and-its-average-h2">6. The theorem’s torsion and its average (H2)</h2>
+<p>For</p>
+<p><span class="math display">\[
+A=DX_H=\begin{pmatrix}0&amp;I\\ \epsilon C&amp;0\end{pmatrix},\quad
+C=\begin{pmatrix}
+\cos\varphi_1+\cos(\varphi_1-\varphi_2)&amp;-\cos(\varphi_1-\varphi_2)\\
+-\cos(\varphi_1-\varphi_2)&amp;\cos\varphi_2+\cos(\varphi_1-\varphi_2)
+\end{pmatrix},
+\]</span></p>
+<p>Eq. (2.9) is</p>
+<p><span class="math display">\[
+T_H=\Omega A-A\Omega
+=\operatorname{diag}(-(I+\epsilon C),I+\epsilon C),\qquad
+T=N^TT_H(K)N.
+\]</span></p>
+<p>This formula is used even off invariance. The derivative-based torsion in the double-precision course solver is a different off-torus quantity.</p>
+<p>Grid values of <code>L</code>, <code>B</code>, <code>N</code> and <code>T</code> are enclosed with MPFI, including each 2-by-2 inverse. The sampled mean is enlarged by the analytic mean-alias bound below <strong>in every entry</strong>. A direct interval inverse of this enlarged average then bounds <code>||&lt;T&gt;^-1||</code>. Invertibility on a grid alone is not used to certify strip-wide invertibility.</p>
+<p>The strict budgets are</p>
+<p><span class="math display">\[
+\begin{aligned}
+\sigma_L=\sigma_{L^T}&amp;=f\max(b_L,b_{L^T}),\\
+\sigma_N=\sigma_{N^T}&amp;=f\max(b_N,b_{N^T}),\\
+\sigma_B&amp;=f b_B,\qquad \sigma_{\langle T\rangle^{-1}}=f b_{\langle T\rangle^{-1}},
+\end{aligned}
+\]</span></p>
+<p>rounded upward, with <code>f=sigmaFactor&gt;1</code>. Every gap between a budget and an initial bound is required to have a strictly positive lower bound.</p>
+<h2 id="rigorous-fft-interpolation-and-mean-alias-bounds">7. Rigorous FFT, interpolation and mean-alias bounds</h2>
+<p>The FFT implements</p>
+<p><span class="math display">\[
+\widetilde f_k=M^{-2}\sum_{i,j=0}^{M-1}
+f(2\pi i/M,2\pi j/M)e^{-2\pi\mathrm i(k_1i+k_2j)/M}.
+\]</span></p>
+<p>It encloses the <strong>discrete</strong> coefficients. For a function bounded by <code>F</code> on a wider strip <code>w</code>, its true coefficients satisfy <code>|fhat_k| &lt;= F exp(-w |k|_1)</code>.</p>
+<p>Let <code>q=exp(-(w-rho))</code> and use the half-open FFT rectangle. The exact alias identity is <code>ftilde_k = sum_m fhat_(k+Mm)</code>. Each omitted mode folds to a representative with no larger <code>l1</code> index. Consequently</p>
+<p><span class="math display">\[
+\begin{aligned}
+\|f-I_Mf\|_\rho
+&amp;\le2F\sum_{k\text{ outside}}q^{|k|_1}\\
+&amp;\le 8F\,q^{M/2}\frac{1+q}{(1-q)^2}.
+\end{aligned}
+\]</span></p>
+<p>The union bound includes both axes and the Nyquist modes; its overcounting is conservative. It is a simpler, less sharp bound derived from the same alias identity as Figueras–Haro–Luque, Section 3. Thus</p>
+<p><span class="math display">\[
+b_E=\max_i\sum_{k\text{ in grid}}|\widetilde E_{i,k}|e^{\rho_r|k|_1}
+       +C_{\mathrm{grid}}M_E
+\]</span></p>
+<p>bounds the full continuous residual. All weights and sums are enclosed. The independent wider-strip bound <code>M_E</code> comes from</p>
+<p><span class="math display">\[
+E_\varphi=v-D_\theta u\,\omega_r,\qquad
+E_I=\epsilon(\sin\varphi_1+\sin(\varphi_1-\varphi_2),
+\sin\varphi_2-\sin(\varphi_1-\varphi_2))-D_\theta v\,\omega_r.
+\]</span></p>
+<p>The exact constant action offset has been canceled symbolically.</p>
+<p>For the mean, let <code>q=exp(-w M)</code>. Only frequencies in <code>M Z^2</code> alias into zero, so</p>
+<p><span class="math display">\[
+|\langle f\rangle-M^{-2}\sum f(\theta_{ij})|
+\le F\left[\left(\frac{1+q}{1-q}\right)^2-1\right]
+=\frac{4Fq}{(1-q)^2}.
+\]</span></p>
+<p>The wider-strip torsion bound is <code>M_T &lt;= b_Nt(w) c_Th(w) b_N(w)</code>. It bounds every matrix entry, so the above error may safely inflate each sampled mean entry before inversion. These computations require only the finite candidate, not an assumed analyticity width of the unknown exact torus.</p>
+<h2 id="appendix-b-implementation-map">8. Appendix B implementation map</h2>
+<p>The code uses <code>g=gamma*delta</code>,</p>
+<p><span class="math display">\[
+e_* = \max(b_{\eta^L},b_{\eta^N}/g),\quad
+e_*&#39;=e_*/\delta,\quad \chi=e_*/(\gamma\delta^2).
+\]</span></p>
+<p>The projected residual majorants are conservatively obtained as <code>b_etaL=b_Nt*b_E</code>, <code>b_etaN=b_DKt*b_E</code>. Their exact zero-average compatibility is the geometric identity for an exact symplectic Hamiltonian, as in the paper; no numerical zero-mode scan is used to prove it.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Code quantities</th>
+<th>Paper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>C_OmegaL</code>, <code>C_OmegaN</code>, <code>C_sym</code>, <code>nu</code></td>
+<td>Table 1, (3.2), (3.3), (3.7), (3.8)</td>
+</tr>
+<tr class="even">
+<td><code>C_E_L/N</code>, <code>C_Et_L/N</code>, <code>C_DE</code>, <code>C_DEt</code></td>
+<td>Table 1, (3.9)–(3.12)</td>
+</tr>
+<tr class="odd">
+<td><code>C_LieK/L/Lt/G/B/N</code>, <code>C_T</code></td>
+<td>Table 1, (3.13)–(3.19)</td>
+</tr>
+<tr class="even">
+<td><code>C_redLL/NL/NN/LN</code> and components</td>
+<td>Table 1, (3.21)–(3.24)</td>
+</tr>
+<tr class="odd">
+<td><code>C_meanXiN</code>, <code>C_xiN</code>, <code>C_barK</code>, <code>C_barDK_common</code>, <code>C_barE</code>, <code>Q_barEtaN</code></td>
+<td>Table 2, (3.44)–(3.58)</td>
+</tr>
+<tr class="even">
+<td><code>C_xiL</code>, <code>C_deltaK/DK/G/B/N/T/InvT</code></td>
+<td>Table 3, (3.60)–(3.73)</td>
+</tr>
+<tr class="odd">
+<td><code>C_LieXiL</code>, <code>C_newE</code>, <code>Q_etaN</code>, <code>Q_etaL1</code>–<code>Q_etaL5</code>, <code>Q_etaL</code></td>
+<td>Table 3, (3.76)–(3.87)</td>
+</tr>
+<tr class="even">
+<td><code>a</code>, <code>Q_eta</code>, <code>C_dist</code>, <code>C_Delta</code>, <code>theorem_C</code>, <code>kappa</code></td>
+<td>Table 4, (3.88)–(3.99)</td>
+</tr>
+<tr class="odd">
+<td><code>distance_K/DK/DKt/B/N/Nt/InvT</code></td>
+<td>(2.32)–(2.38)</td>
+</tr>
+</tbody>
+</table>
+<p>Terms multiplying first-integral or nonconstant-geometry derivatives vanish in this specialization. In particular <code>Q_etaL4=0</code>.</p>
+<p>There are two different pair conventions in the tables. The <code>E</code>, <code>E^T</code>, <code>DE</code>, <code>(DE)^T</code> and <code>redNN</code> coefficients combine as <code>C_L+g C_N</code>; the already-weighted normal/tangent correction pairs and <code>redLN</code> combine as <code>C_L+C_N</code>. The code preserves this distinction.</p>
+<h3 id="conservative-common-transpose-bounds">Conservative common-transpose bounds</h3>
+<p>For the intermediate normal correction the code uses the common bound</p>
+<p><span class="math display">\[
+C_{\Delta\bar{DK},\mathrm{common}}
+=4\sigma_N(C_{\widehat\xi^N_0}^L+C_{\widehat\xi^N_0}^N+c_R^1).
+\]</span></p>
+<p>The factor 4 dominates the factors <code>d=2</code> and <code>n=2</code> in Table 2. The final common derivative bound uses <code>2n=4</code>, covering both (3.64) and (3.65). Since <code>L=DK</code>, the same bound applies to changes in <code>L</code> and <code>L^T</code>.</p>
+<p>For constant canonical geometry, directly transposing <code>N=J_p L B</code> gives</p>
+<p><span class="math display">\[
+C_{\Delta N^T}\le\sigma_B C_{\Delta L^T}
+                  +C_{\Delta B}\sigma_{L^T}.
+\]</span></p>
+<p>The common budgets implement this bound and its non-transposed counterpart. This avoids identifying row and column norms or relying on the untransposed symbols printed in Table 3’s row (3.71). Subsequent constants are enlarged consistently. The numerical certificate therefore uses conservative majorants, not a claim of reproducing the paper’s sharpest constants.</p>
+<h3 id="final-inequalities-and-distances">Final inequalities and distances</h3>
+<p>Set</p>
+<p><span class="math display">\[
+Q_\eta=\max(Q_{\eta^L},2Q_{\eta^N}),\qquad
+\kappa=4Q_\eta\chi,
+\]</span></p>
+<p>and compute <code>C_Delta</code> from all six positive geometry-budget gaps. Then</p>
+<p><span class="math display">\[
+\mathcal C=\max\{\gamma\delta C_{sym},\ C_{\xi^L},\
+\delta C_{dist}+2Q_\eta,\ C_\Delta+4Q_\eta\}.
+\]</span></p>
+<p>The code requires <code>nu&lt;1</code>, <code>C*chi&lt;1</code>, <code>kappa&lt;1</code>, and checks each component of the maximum explicitly. It then computes</p>
+<p><span class="math display">\[
+r_K=\frac{2}{2-\kappa}\frac{C_{\Delta K}}{\gamma\delta}e_*,\qquad
+r_{DK}=\frac{C_{\Delta DK,\mathrm{common}}}{1-\kappa}\chi,
+\]</span></p>
+<p>and the analogous inverse/frame distances. The additional limiting embedding and regular real-domain reserves must also pass. All comparisons use strict interval endpoint inequalities.</p>
+<h2 id="references-checked-locally">References checked locally</h2>
+<ul>
+<li><code>Figueras_Haro_A_modified_parameterization_method_for_invariant_Lagrangian_tori_for_partially_integrable_Hamiltonian_systems_Physica_D_462_2024.pdf</code> — Theorem 2.18, Remarks 2.20–2.24, Lemma 2.14, Corollary 2.15, Lemma 3.6, Section 3.3, Appendix B.</li>
+<li><code>Figueras_Haro_Luque_Rigorous_Computer-Assisted_Application_of_KAM_Theory:_A_Modern_Approach_Foundations_of_Computational_Mathematics_1_71_2016.pdf</code> — Section 3 (alias identity and interpolation bounds) and Section 5 (validation methodology). This local filename is the online-first version; the published volume is <em>Found. Comput. Math.</em> 17 (2017), 1123–1193.</li>
+</ul>
+
+    </main>
+    <nav class="menu" aria-label="Course navigation">
+      <div class="menu_title">Course materials</div>
+      <ul><li><a href="index.html">Course overview</a></li>
+<li><a href="getting-started.html">Getting started</a></li>
+<li><a href="pendula.html">Coupled-pendulum examples</a></li>
+<li><a href="numerical-kam.html">Numerical KAM solver</a></li>
+<li><a href="validation.html">Rigorous validation</a></li>
+<li><a href="theorem.html" aria-current="page">Validation theorem</a></li>
+<li><a href="numerical-library.html">Numerical library</a></li>
+<li><a href="validation-results.html">Recorded validation results</a></li></ul>
+      <div class="menu_title">Downloads</div>
+      <ul>
+        <li><a href="slides/slides.pdf">Lecture slides (PDF)</a></li>
+        <li><a href="downloads/numerics-and-validation-of-kam-tori.zip" download>All materials (ZIP)</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div id="main_content_bottom"></div>
+  <div id="footer"><strong>Last update: 2026-09-21</strong> | Jordi-Llu&iacute;s Figueras</div>
+</div>
+</body>
+</html>

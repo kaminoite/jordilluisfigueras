@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Numerics and validation of KAM tori — Numerics and validation of KAM tori, Kraków 2026, Jordi-Lluís Figueras.">
+  <title>Numerics and validation of KAM tori | Numerics and validation of KAM tori</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="course.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div id="container">
+  <div id="header">Jordi-Lluís Figueras personal website</div>
+  <div id="sub_header">Numerics and validation of KAM tori</div>
+  <div id="main_content_top"></div>
+  <div id="main_content">
+    <main class="content">
+      <p><a href="../../index.html">Home</a> / <a href="index.html">KAM course</a></p>
+      
+<h1>Numerics and validation of KAM tori</h1>
+<p><strong>Jordi-Lluís Figueras · Universitat Politècnica de Catalunya (UPC)</strong></p>
+<p>PhD course materials for the XXVII International Workshop for Young Mathematicians “Dynamical Systems”, Jagiellonian University, Kraków, <strong>20–26 September 2026</strong>.</p>
+<p>Explore Hamiltonian dynamics, compute invariant tori numerically, and validate their existence using interval arithmetic.</p>
+<div class="actions">
+  <a href="slides/slides.pdf">Lecture slides (PDF)</a>
+  <a href="downloads/numerics-and-validation-of-kam-tori.zip" download>Download all materials (ZIP)</a>
+  <a href="getting-started.html">Getting started</a>
+</div>
+<h2 id="slides">Lecture slides</h2>
+<p><a href="slides/slides.pdf">Read the lecture slides</a> alongside the examples below. The simulation button inside the PDF points to the lecturer’s local presentation server; use the downloadable Python program to run the demonstration on your own computer.</p>
+<h2 id="explore">1. Explore: coupled pendula</h2>
+<p>Experiment with initial conditions and coupling in a Python graphical demonstration. The supplied examples illustrate chaotic motion, libration, periodic motion, and quasiperiodic rotations.</p>
+<a href="pendula.html"><img src="codes/coupled_pendula_examples.png" alt="Phase-space projections and Poincaré sections for four coupled-pendulum examples" loading="lazy"></a>
+<p><a href="codes/coupled_pendula.py" download>Download the Python program</a> and run locally. See <a href="pendula.html">initial conditions, commands, and interpretation</a>.</p>
+<pre><code>python3 codes/coupled_pendula.py</code></pre>
+<p>The GUI displays phase-space projections, not Poincaré sections. This pendulum demonstration uses a different Hamiltonian from the coupled-rotator KAM examples below.</p>
+<h2 id="compute">2. Compute: a numerical KAM torus</h2>
+<p>A double-precision quasi-Newton solver computes an invariant torus for a coupled-rotator Hamiltonian, with default frequency <code>(1, (1+sqrt(5))/2)</code>. Its shared numerical library includes its own FFT; no external numerical library is required.</p>
+<p>After extracting the ZIP, run these commands from <code>toWebSite/</code>:</p>
+<pre><code>make -C codes/KAMExample
+codes/KAMExample/exampleKAM.x --epsilon 0.01 --grid 64 --tolerance 1e-12 --output torus.csv</code></pre>
+<p><a href="numerical-kam.html">Solver documentation, output, and plotting instructions</a> · <a href="numerical-library.html">Numerical library</a></p>
+<p>Supplied numerical embeddings: <a href="codes/KAMExample/results/torus-eps0p01.csv" download>epsilon = 0.01 (CSV)</a> and <a href="codes/KAMExample/results/torus-eps0p03.csv" download>epsilon = 0.03 (CSV)</a>. The full download also includes convergence histories and diagnostics.</p>
+<h2 id="validate">3. Validate: a rigorous KAM torus</h2>
+<p>The independent validator uses MPFI interval arithmetic, with MPFR and GMP, to check the sufficient hypotheses of the implemented KAM theorem. Numerical convergence alone is not an existence proof.</p>
+<p>The included certificate validates <strong>epsilon = 0.01</strong>. The epsilon = 0.03 numerical dataset does not certify with the default settings; failure to certify does not prove nonexistence.</p>
+<ul>
+  <li><a href="validation.html">Build, run, and interpret the validator</a></li>
+  <li><a href="theorem.html">Mathematical contract and theorem-to-code map</a></li>
+  <li><a href="validation-results.html">Recorded validation and reproduction instructions</a></li>
+  <li><a href="codes/validation/results/eps0p01.json" download>Recorded certificate (JSON)</a> and <a href="codes/validation/results/eps0p01.json.torus" download>exact Fourier candidate</a></li>
+</ul>
+<h2 id="setup">Getting started</h2>
+<p>Download and extract the complete ZIP, keeping <code>codes/KAMExample/</code> and <code>codes/lib/</code> alongside each other. The archive contains a top-level <code>toWebSite/</code> folder. Commands on this overview page run from that folder.</p>
+<table>
+  <thead><tr><th>Component</th><th>Requirements</th></tr></thead>
+  <tbody>
+    <tr><td>Slides</td><td>PDF viewer</td></tr>
+    <tr><td>Pendulum GUI</td><td>Python 3, NumPy, Matplotlib, and a graphical backend such as TkAgg</td></tr>
+    <tr><td>Numerical solver</td><td>C++17 compiler and GNU make, on Linux or WSL</td></tr>
+    <tr><td>Optional numerical plots</td><td>Python 3, NumPy, Matplotlib; can run headlessly</td></tr>
+    <tr><td>Rigorous validator</td><td>C++17 compiler, GNU make, MPFI, MPFR, and GMP development libraries</td></tr>
+  </tbody>
+</table>
+<p><a href="getting-started.html">Installation commands and the complete explore → compute → validate workflow</a></p>
+<h2 id="references">References and licence</h2>
+<p>J.-Ll. Figueras and A. Haro, <em>A modified parameterization method for invariant Lagrangian tori for partially integrable Hamiltonian systems</em>, Physica D 462 (2024), 134127. <a href="https://doi.org/10.1016/j.physd.2024.134127">doi:10.1016/j.physd.2024.134127</a>.</p>
+<p>Copyright © 2026 Jordi-Lluís Figueras. The distributed source code and Makefiles use the <a href="codes/LICENSE">BSD 2-Clause License</a>. The lecture PDF retains its own image and source acknowledgements. External arithmetic libraries are installed separately and retain their respective licences.</p>
+
+    </main>
+    <nav class="menu" aria-label="Course navigation">
+      <div class="menu_title">Course materials</div>
+      <ul><li><a href="index.html" aria-current="page">Course overview</a></li>
+<li><a href="getting-started.html">Getting started</a></li>
+<li><a href="pendula.html">Coupled-pendulum examples</a></li>
+<li><a href="numerical-kam.html">Numerical KAM solver</a></li>
+<li><a href="validation.html">Rigorous validation</a></li>
+<li><a href="theorem.html">Validation theorem</a></li>
+<li><a href="numerical-library.html">Numerical library</a></li>
+<li><a href="validation-results.html">Recorded validation results</a></li></ul>
+      <div class="menu_title">Downloads</div>
+      <ul>
+        <li><a href="slides/slides.pdf">Lecture slides (PDF)</a></li>
+        <li><a href="downloads/numerics-and-validation-of-kam-tori.zip" download>All materials (ZIP)</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div id="main_content_bottom"></div>
+  <div id="footer"><strong>Last update: 2026-09-21</strong> | Jordi-Llu&iacute;s Figueras</div>
+</div>
+</body>
+</html>

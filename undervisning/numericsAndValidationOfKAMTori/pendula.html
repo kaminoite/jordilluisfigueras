@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Coupled-pendulum examples — Numerics and validation of KAM tori, Kraków 2026, Jordi-Lluís Figueras.">
+  <title>Coupled-pendulum examples | Numerics and validation of KAM tori</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="course.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div id="container">
+  <div id="header">Jordi-Lluís Figueras personal website</div>
+  <div id="sub_header">Numerics and validation of KAM tori</div>
+  <div id="main_content_top"></div>
+  <div id="main_content">
+    <main class="content">
+      <p><a href="../../index.html">Home</a> / <a href="index.html">KAM course</a></p>
+      <div class="notice"><strong>Working directory:</strong> run this guide’s commands from the extracted <code>toWebSite/</code> directory, unless stated otherwise. <a href="getting-started.html">Setup and complete workflow</a> · <a href="codes/coupled_pendula_examples.md">Original Markdown</a>.</div><h1 id="coupled-pendulum-examples-at-fixed-coupling">Coupled-pendulum examples at fixed coupling</h1>
+<p>All examples use <strong>epsilon = 0.1</strong> and the default physical parameters in <code>coupled_pendula.py</code>: <code>m1 = m2 = 1</code>, <code>l1 = 1</code>, <code>l2 = 1.3</code>, <code>a = 3</code>, <code>g = k = 1</code>. State ordering is <strong>(q1, q2, p1, p2)</strong>; angles are in radians and the last two coordinates are canonical momenta, not angular velocities. The coupling is fixed, but the examples have different energies.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Behaviour</th>
+<th>Initial state</th>
+<th style="text-align: right;">Energy H</th>
+<th style="text-align: right;">Suggested display time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Chaotic</td>
+<td><code>(0, 0, 2, 1)</code></td>
+<td style="text-align: right;">2.295857988166</td>
+<td style="text-align: right;">1000</td>
+</tr>
+<tr class="even">
+<td>Libration</td>
+<td><code>(0.8, -0.4, 0, 0)</code></td>
+<td style="text-align: right;">0.474283475334</td>
+<td style="text-align: right;">400</td>
+</tr>
+<tr class="odd">
+<td>Periodic</td>
+<td><code>(0.3, -0.0888544167980643, 0, 0)</code></td>
+<td style="text-align: right;">0.057939567392</td>
+<td style="text-align: right;">120</td>
+</tr>
+<tr class="even">
+<td>Quasiperiodic rotations</td>
+<td><code>(0, 0, 3, -4)</code></td>
+<td style="text-align: right;">9.233727810651</td>
+<td style="text-align: right;">400</td>
+</tr>
+</tbody>
+</table>
+<p>Libration means bounded angular oscillation. It overlaps with the other classifications: the libration example is numerically quasiperiodic, and the periodic example also librates. The rotational quasiperiodic example has the pendulums turning in opposite directions.</p>
+<figure>
+<img src="codes/coupled_pendula_examples.png" alt="Phase projections and Poincare sections for the four examples" />
+<figcaption aria-hidden="true">Phase projections and Poincare sections for the four examples</figcaption>
+</figure>
+<p>The left and middle columns show phase projections to <code>T = 400</code>; the right column shows Poincare sections to <code>T = 10000</code>. All panels use <code>h = 0.005</code>.</p>
+<h2 id="run-the-examples">Run the examples</h2>
+<p>Run a command from the project directory, then click <strong>Run</strong> in the window. The <code>--initial-state</code> option selects the exact coordinates, avoiding mouse placement errors, which matter especially for the periodic orbit.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Chaotic</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> codes/coupled_pendula.py <span class="at">--epsilon</span> 0.1 <span class="at">--duration</span> 1000 <span class="at">--initial-state</span> 0 0 2 1</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Libration</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> codes/coupled_pendula.py <span class="at">--epsilon</span> 0.1 <span class="at">--duration</span> 400 <span class="at">--initial-state</span> 0.8 <span class="at">-0.4</span> 0 0</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Periodic</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> codes/coupled_pendula.py <span class="at">--epsilon</span> 0.1 <span class="at">--duration</span> 120 <span class="at">--initial-state</span> 0.3 <span class="at">-0.0888544167980643</span> 0 0</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Quasiperiodic rotations</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> codes/coupled_pendula.py <span class="at">--epsilon</span> 0.1 <span class="at">--duration</span> 400 <span class="at">--initial-state</span> 0 0 3 <span class="at">-4</span></span></code></pre></div>
+<p>These commands use the default Verlet step <code>--dt 0.01</code>. Add <code>--dt 0.005</code> for smaller discretization error. Full phase projections can look thick for both quasiperiodic and chaotic trajectories; they are not Poincare sections.</p>
+<h2 id="classification-and-numerical-checks">Classification and numerical checks</h2>
+<p>The selected trajectories were integrated with the project’s <code>integrateTrajectory</code> function to <strong>T = 10000</strong>, with both <strong>h = 0.01</strong> and <strong>h = 0.005</strong>. Poincare sections used <code>q1 = 0 modulo 2*pi</code>, <code>p1 &gt; 0</code>, with linear interpolation between integration steps.</p>
+<h3 id="chaotic">Chaotic</h3>
+<p>For <code>(0, 0, 2, 1)</code>, the Poincare section is a scattered two-dimensional cloud. Pendulum 1 exhibits irregular librations and rotations. Pendulum 2 remains confined, consistent with the energy being below its gravitational barrier 2.6.</p>
+<p>Finite-time largest Lyapunov estimates, obtained by evolving a nearby orbit and renormalizing its separation to <code>1e-7</code> every time unit, were:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">T</th>
+<th style="text-align: right;">h = 0.01</th>
+<th style="text-align: right;">h = 0.005</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1000</td>
+<td style="text-align: right;">0.08160</td>
+<td style="text-align: right;">0.08376</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">0.09483</td>
+<td style="text-align: right;">0.08333</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5000</td>
+<td style="text-align: right;">0.10154</td>
+<td style="text-align: right;">0.08090</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10000</td>
+<td style="text-align: right;">0.08054</td>
+<td style="text-align: right;">0.07546</td>
+</tr>
+</tbody>
+</table>
+<p>The initial perturbation direction was <code>(0.37, -0.51, 0.63, 0.45)</code>, normalized in the Euclidean norm of the canonical coordinates. Persistence of a positive estimate under longer integration and step refinement supports chaos; the precise finite-time value varies as the orbit explores the chaotic region.</p>
+<h3 id="libration">Libration</h3>
+<p>For <code>(0.8, -0.4, 0, 0)</code>, confinement follows directly from energy conservation: the kinetic and spring energies are nonnegative, and reaching <code>q1 = +/-pi</code> requires <code>H &gt;= 2</code>, while reaching <code>q2 = +/-pi</code> requires <code>H &gt;= 2.6</code>. Here <code>H = 0.474283475334</code>, so neither pendulum can leave its initial well.</p>
+<p>At <code>h = 0.005</code>, sampled angle ranges over <code>T = 10000</code> were approximately <code>q1 in [-0.87130, 0.88735]</code> and <code>q2 in [-0.40000, 0.40425]</code>. The Poincare points lie on a closed curve, and the finite-time Lyapunov estimate decreases from <code>0.00427</code> at <code>T = 1000</code> to <code>0.000652</code> at <code>T = 10000</code>, consistent with quasiperiodic libration.</p>
+<h3 id="periodic">Periodic</h3>
+<p>For <code>(0.3, -0.0888544167980643, 0, 0)</code>, the period of the continuous system is</p>
+<pre class="text"><code>P = 5.938156672603949</code></pre>
+<p>This is a nontrivial nonlinear periodic orbit. It was obtained by fixing <code>q1(0) = 0.3</code>, setting both initial momenta to zero, and solving for <code>q2(0)</code> and a half-period <code>tau</code> such that both momenta vanish again at <code>tau</code>. Time reversibility then closes the orbit at <code>P = 2*tau</code>. The shooting seed was the higher-frequency linear normal mode at the origin.</p>
+<p>Using SciPy DOP853 for the exact vector field, with <code>rtol = 3e-14</code> and <code>atol = 3e-15</code>, the full-period infinity-norm closure residual was <code>3.8e-14</code> or less. Verlet closure errors over the same period were approximately <code>9.19e-6</code> and <code>2.30e-6</code>, with constant steps just below <code>0.01</code> and <code>0.005</code> respectively, chosen to land exactly at <code>P</code>. Thus the supplied coordinates describe the continuous periodic orbit to numerical accuracy; the fixed-step GUI trajectory has the expected discretization error.</p>
+<h3 id="quasiperiodic-rotations">Quasiperiodic rotations</h3>
+<p>For <code>(0, 0, 3, -4)</code>, the Poincare section follows a smooth invariant-looking curve, with both pendulums rotating in opposite directions. Weighted time averages of <code>qdot = p/inertia</code>, at <code>h = 0.005</code>, give angular rotation rates</p>
+<pre class="text"><code>omega1 =  2.66491636
+omega2 = -1.88464031
+omega1 / omega2 = -1.4140185489</code></pre>
+<p>These averages use the smooth weight <code>exp(-1/(s*(1-s)))</code>, with normalized time <code>0 &lt; s &lt; 1</code>. The frequency ratio agrees between the first and second 5000-time-unit halves to about <code>2.5e-10</code>. At <code>h = 0.01</code> it is <code>-1.4140181676</code>, showing a small discretization shift. The finite-time Lyapunov estimate at <code>h = 0.005</code> decreases from <code>0.00678</code> at <code>T = 1000</code> to <code>0.00134</code> at <code>T = 10000</code>. Together these diagnostics support quasiperiodicity; finite-time computations do not prove an irrational frequency ratio or the existence of an invariant torus.</p>
+<h3 id="energy-error-check">Energy-error check</h3>
+<p>Maximum <code>abs(H(t)-H(0))/(1+abs(H(0)))</code> over the full integrations:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Example</th>
+<th style="text-align: right;">h = 0.01</th>
+<th style="text-align: right;">h = 0.005</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Chaotic</td>
+<td style="text-align: right;">1.52e-5</td>
+<td style="text-align: right;">3.80e-6</td>
+</tr>
+<tr class="even">
+<td>Libration</td>
+<td style="text-align: right;">8.50e-6</td>
+<td style="text-align: right;">2.12e-6</td>
+</tr>
+<tr class="odd">
+<td>Periodic</td>
+<td style="text-align: right;">1.54e-6</td>
+<td style="text-align: right;">3.84e-7</td>
+</tr>
+<tr class="even">
+<td>Quasiperiodic rotations</td>
+<td style="text-align: right;">2.25e-5</td>
+<td style="text-align: right;">5.61e-6</td>
+</tr>
+</tbody>
+</table>
+<p>The approximately fourfold reduction is consistent with the second-order Störmer–Verlet scheme.</p>
+
+    </main>
+    <nav class="menu" aria-label="Course navigation">
+      <div class="menu_title">Course materials</div>
+      <ul><li><a href="index.html">Course overview</a></li>
+<li><a href="getting-started.html">Getting started</a></li>
+<li><a href="pendula.html" aria-current="page">Coupled-pendulum examples</a></li>
+<li><a href="numerical-kam.html">Numerical KAM solver</a></li>
+<li><a href="validation.html">Rigorous validation</a></li>
+<li><a href="theorem.html">Validation theorem</a></li>
+<li><a href="numerical-library.html">Numerical library</a></li>
+<li><a href="validation-results.html">Recorded validation results</a></li></ul>
+      <div class="menu_title">Downloads</div>
+      <ul>
+        <li><a href="slides/slides.pdf">Lecture slides (PDF)</a></li>
+        <li><a href="downloads/numerics-and-validation-of-kam-tori.zip" download>All materials (ZIP)</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div id="main_content_bottom"></div>
+  <div id="footer"><strong>Last update: 2026-09-21</strong> | Jordi-Llu&iacute;s Figueras</div>
+</div>
+</body>
+</html>

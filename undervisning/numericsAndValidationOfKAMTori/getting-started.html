@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Getting started — Numerics and validation of KAM tori, Kraków 2026, Jordi-Lluís Figueras.">
+  <title>Getting started | Numerics and validation of KAM tori</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="course.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div id="container">
+  <div id="header">Jordi-Lluís Figueras personal website</div>
+  <div id="sub_header">Numerics and validation of KAM tori</div>
+  <div id="main_content_top"></div>
+  <div id="main_content">
+    <main class="content">
+      <p><a href="../../index.html">Home</a> / <a href="index.html">KAM course</a></p>
+      <div class="notice"><strong>Working directory:</strong> run this guide’s commands from the extracted <code>toWebSite/</code> directory, unless stated otherwise. <a href="getting-started.html">Setup and complete workflow</a> · <a href="README.md">Original Markdown</a>.</div><h1 id="numerics-and-validation-of-kam-tori">Numerics and validation of KAM tori</h1>
+<p>Course materials by <strong>Jordi-Lluís Figueras</strong>, Universitat Politècnica de Catalunya (UPC), Barcelona, Spain.</p>
+<p>XXVII International Workshop for Young Mathematicians “Dynamical Systems”, 20–26 September 2026, Jagiellonian University, Kraków.</p>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><a href="slides/slides.pdf">PDF slides</a>.</li>
+<li><a href="codes/coupled_pendula.py">Interactive coupled pendula</a>, with <a href="pendula.html">initial-condition examples</a>.</li>
+<li><a href="numerical-kam.html">Numerical KAM example</a>: a double-precision quasi-Newton solver, its Makefile, plotting script, and example results.</li>
+<li><a href="numerical-library.html">Shared numerical library</a>: the source files required by the numerical example, including its own FFT.</li>
+<li><a href="validation.html">Rigorous KAM validation</a>: an independent interval-arithmetic validator, tests, <a href="theorem.html">theorem documentation</a>, and a recorded certificate with its exact Fourier candidate.</li>
+</ul>
+<p>Keep the directory structure intact: <code>codes/KAMExample</code> requires <code>codes/lib</code> as a sibling directory. The two KAM programs use the coupled-rotator Hamiltonian described in their READMEs; the pendulum GUI illustrates a different Hamiltonian.</p>
+<p><strong>All commands below are run from this directory (<code>toWebSite</code>).</strong> The detailed component READMEs instead use their respective component directories.</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>The commands are intended for Linux (or Linux under WSL). The C++ programs use POSIX/GNU <code>getopt_long</code>, a C++17 compiler, and GNU make.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>PDF slides</td>
+<td>Any PDF viewer</td>
+</tr>
+<tr class="even">
+<td>Coupled-pendulum GUI</td>
+<td>Python 3, NumPy, Matplotlib, and an interactive GUI backend such as TkAgg</td>
+</tr>
+<tr class="odd">
+<td>Numerical KAM solver</td>
+<td>C++17 compiler and GNU make; no external numerical libraries</td>
+</tr>
+<tr class="even">
+<td>Optional numerical plots</td>
+<td>Python 3, NumPy, Matplotlib; uses the noninteractive Agg backend</td>
+</tr>
+<tr class="odd">
+<td>Rigorous validator</td>
+<td>C++17 compiler, GNU make, MPFI, MPFR, and GMP (development headers and libraries)</td>
+</tr>
+</tbody>
+</table>
+<p>On Debian/Ubuntu, install the system dependencies with:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt update</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install build-essential python3 python3-venv python3-tk libmpfi-dev libmpfr-dev libgmp-dev</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> venv .venv</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .venv/bin/activate</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> pip install numpy matplotlib</span></code></pre></div>
+<p>Activate <code>.venv</code> again in a new terminal before running the Python programs. The GUI requires a graphical desktop/display. Under WSL, use WSLg or another working graphical display. The plotting script can run headlessly.</p>
+<p>External arithmetic libraries: <a href="https://mpfi.org/">MPFI</a>, <a href="https://www.mpfr.org/">MPFR</a>, and <a href="https://gmplib.org/">GMP</a>. They are installed separately and retain their own licenses. Neither C++ program needs TorKam or FFTW.</p>
+<h2 id="explore-the-coupled-pendula">1. Explore the coupled pendula</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> codes/coupled_pendula.py</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> codes/coupled_pendula.py <span class="at">--help</span></span></code></pre></div>
+<p>Click either phase-space panel to select that pendulum’s position and momentum, then click <strong>Run</strong>. Both selections define one four-dimensional initial state. <strong>Random</strong> adds a batch of trajectories; <strong>Clear</strong> removes them. The coupling slider applies to subsequent runs. <strong>Fading trail</strong> controls the visible history.</p>
+<p>For example:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> codes/coupled_pendula.py <span class="at">--epsilon</span> 0.1 <span class="at">--duration</span> 400 <span class="at">--dt</span> 0.005 <span class="at">--initial-state</span> 0.8 <span class="at">-0.4</span> 0 0</span></code></pre></div>
+<p>State order is <code>(q1, q2, p1, p2)</code>, with angles in radians. Integration uses fixed-step symplectic Störmer–Verlet. The panels are phase-space projections, not Poincaré sections. If Matplotlib selects a noninteractive backend, try:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">MPLBACKEND</span><span class="op">=</span>TkAgg <span class="ex">python3</span> codes/coupled_pendula.py</span></code></pre></div>
+<p>The simulation button embedded in the lecture PDF points to the lecturer’s local presentation server. For this download, launch the GUI with the commands above.</p>
+<h2 id="compute-a-numerical-kam-torus">2. Compute a numerical KAM torus</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> codes/KAMExample</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">codes/KAMExample/exampleKAM.x</span> <span class="at">--help</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> codes/KAMExample check</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">codes/KAMExample/exampleKAM.x</span> <span class="at">--epsilon</span> 0.01 <span class="at">--grid</span> 64 <span class="at">--tolerance</span> 1e-12 <span class="at">--output</span> torus.csv</span></code></pre></div>
+<p>The Makefile compiles <code>exampleKAM.cpp</code> together with <code>../lib/kam.cpp</code>. The default target frequency is <code>(1, (1+sqrt(5))/2)</code>. The last command writes <code>torus.csv</code> in this directory; it contains the sampled embedding, periodic components, residuals, and energy. <code>--grid</code> is the number of points per angle (a power of two between 8 and 256). Nonlinear operations use a doubled grid; the final sampled residual is checked on a grid four times as large per angle.</p>
+<p>Exit codes: <code>0</code> means numerical convergence, <code>1</code> numerical or I/O failure, and <code>2</code> invalid options. Numerical convergence is not an existence proof; the next program performs the rigorous validation.</p>
+<h3 id="optional-regenerate-the-numerical-figures">Optional: regenerate the numerical figures</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> codes/KAMExample/plot_results.py <span class="at">--results-dir</span> numerical-results <span class="at">--figures-dir</span> figures</span></code></pre></div>
+<p>This runs the solver for epsilon <code>0.01</code> and <code>0.03</code>, producing CSV data and diagnostics under <code>numerical-results/</code>, and PNG/PDF figures under <code>figures/</code>. It creates both directories. The plots show convergence, the embedding, Fourier decay, truncation errors, and comparison with independent RK4 integration. Alternatively, <code>make -C codes/KAMExample figures</code> uses the original course locations <code>codes/KAMExample/results/</code> and <code>slides/images/</code>.</p>
+<h2 id="validate-a-kam-torus-rigorously">3. Validate a KAM torus rigorously</h2>
+<p>With Debian/Ubuntu arithmetic packages installed under <code>/usr</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> codes/validation MPFI_PREFIX=/usr</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">codes/validation/validateKAM.x</span> <span class="at">--help</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> codes/validation MPFI_PREFIX=/usr check</span></code></pre></div>
+<p>For a custom MPFI installation, replace <code>/usr</code> with its installation prefix. The Makefile defaults to <code>/usr/local</code>, adds include/library search paths and a runtime library path, and links <code>-lmpfi -lmpfr -lgmp</code>. If changing the prefix after a build, run <code>make -C codes/validation clean</code> before rebuilding. Additional nonstandard MPFR/GMP locations can be supplied through <code>CPPFLAGS</code> and <code>LDFLAGS</code>.</p>
+<p>Validate the <code>torus.csv</code> generated above:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">codes/validation/validateKAM.x</span> <span class="at">--input</span> torus.csv <span class="at">--epsilon</span> 1/100 <span class="at">--frequency</span> golden <span class="at">--precision</span> 256 <span class="at">--refine</span> 2 <span class="at">--certificate</span> validation.json</span></code></pre></div>
+<p>Or use the supplied numerical dataset:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">codes/validation/validateKAM.x</span> <span class="at">--input</span> codes/KAMExample/results/torus-eps0p01.csv <span class="at">--epsilon</span> 1/100 <span class="at">--precision</span> 256 <span class="at">--refine</span> 2 <span class="at">--certificate</span> validation-supplied.json</span></code></pre></div>
+<p>Each command writes a JSON report and an exact <code>.json.torus</code> sidecar. Refinement first improves the seed; interval bounds are then recomputed independently for the frozen Fourier polynomial. Only the exact golden-ratio frequency is supported. Epsilon is specified exactly (<code>1/100</code> here); strip widths are in radians. Default precision is 256 bits and the validation grid is 256 points per angle. This calculation is substantially more expensive than the numerical solver.</p>
+<p>To recheck the included frozen candidate without numerical refinement:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">codes/validation/validateKAM.x</span> <span class="at">--candidate</span> codes/validation/results/eps0p01.json.torus <span class="at">--epsilon</span> 1/100 <span class="at">--precision</span> 320 <span class="at">--certificate</span> validation-rechecked.json</span></code></pre></div>
+<p>The included result certifies epsilon <code>0.01</code>; see the component README for the theorem, bounds, and their exact meaning. The epsilon <code>0.03</code> numerical dataset is also supplied, but does not certify with the default settings.</p>
+<p>Validator exit codes:</p>
+<ul>
+<li><code>0</code>: <strong>VALIDATED</strong> — all implemented sufficient hypotheses passed.</li>
+<li><code>1</code>: <strong>NOT_CERTIFIED</strong> — a sufficient condition failed; this does not prove nonexistence.</li>
+<li><code>2</code>: invalid input, unsupported settings, or I/O failure.</li>
+</ul>
+<p>For an isolated build-and-test check of the validator:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> codes/validation MPFI_PREFIX=/usr standalone-check</span></code></pre></div>
+<h2 id="attribution-and-license">Attribution and license</h2>
+<p>Copyright © 2026 <strong>Jordi-Lluís Figueras</strong>. The distributed source code and Makefiles are licensed under the <strong>BSD 2-Clause License</strong>; see <a href="codes/LICENSE">codes/LICENSE</a>. Source headers retain the author attribution and redistribution notices. The validator also includes its own identical <code>LICENSE</code> for standalone use. The software license applies to the code; the lecture PDF retains the image and source acknowledgements shown in the slides.</p>
+<p>The validator implements the mathematics of J.-Ll. Figueras and A. Haro, <em>A modified parameterization method for invariant Lagrangian tori for partially integrable Hamiltonian systems</em>, Physica D 462 (2024), 134127, <a href="https://doi.org/10.1016/j.physd.2024.134127">doi:10.1016/j.physd.2024.134127</a>.</p>
+
+    </main>
+    <nav class="menu" aria-label="Course navigation">
+      <div class="menu_title">Course materials</div>
+      <ul><li><a href="index.html">Course overview</a></li>
+<li><a href="getting-started.html" aria-current="page">Getting started</a></li>
+<li><a href="pendula.html">Coupled-pendulum examples</a></li>
+<li><a href="numerical-kam.html">Numerical KAM solver</a></li>
+<li><a href="validation.html">Rigorous validation</a></li>
+<li><a href="theorem.html">Validation theorem</a></li>
+<li><a href="numerical-library.html">Numerical library</a></li>
+<li><a href="validation-results.html">Recorded validation results</a></li></ul>
+      <div class="menu_title">Downloads</div>
+      <ul>
+        <li><a href="slides/slides.pdf">Lecture slides (PDF)</a></li>
+        <li><a href="downloads/numerics-and-validation-of-kam-tori.zip" download>All materials (ZIP)</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div id="main_content_bottom"></div>
+  <div id="footer"><strong>Last update: 2026-09-21</strong> | Jordi-Llu&iacute;s Figueras</div>
+</div>
+</body>
+</html>

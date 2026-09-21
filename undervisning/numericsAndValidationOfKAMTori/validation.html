@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Rigorous validation — Numerics and validation of KAM tori, Kraków 2026, Jordi-Lluís Figueras.">
+  <title>Rigorous validation | Numerics and validation of KAM tori</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="course.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div id="container">
+  <div id="header">Jordi-Lluís Figueras personal website</div>
+  <div id="sub_header">Numerics and validation of KAM tori</div>
+  <div id="main_content_top"></div>
+  <div id="main_content">
+    <main class="content">
+      <p><a href="../../index.html">Home</a> / <a href="index.html">KAM course</a></p>
+      <div class="notice"><strong>Working directory:</strong> run this guide’s commands from <code>toWebSite/codes/validation/</code>, unless stated otherwise. <a href="getting-started.html">Setup and complete workflow</a> · <a href="codes/validation/README.md">Original Markdown</a>.</div><h1 id="standalone-mpfi-validation-of-a-kamexample-torus">Standalone MPFI validation of a KAMExample torus</h1>
+<p>This program checks <strong>Figueras–Haro (2024), Theorem 2.18</strong>, specialized to <code>d=n=2</code>, the canonical compatible triple, and the exact golden-ratio frequency. It evaluates conservative majorants of the constants in Appendix B and checks the analytic, geometric, arithmetic, domain, and smallness hypotheses.</p>
+<p>The implemented Hamiltonian is</p>
+<p><span class="math display">\[
+H_\epsilon(\varphi,I)=\tfrac12(I_1^2+I_2^2)
+ +\epsilon[\cos\varphi_1+\cos\varphi_2+\cos(\varphi_1-\varphi_2)],
+\qquad \omega_r=(1,(1+\sqrt5)/2).
+\]</span></p>
+<p><strong>A nonzero-coupling validation is included:</strong> <code>results/eps0p01.json</code>, with the exact frozen Fourier candidate in <code>results/eps0p01.json.torus</code>. Its seed is the course’s <code>KAMExample/results/torus-eps0p01.csv</code>, followed by two optional local multiprecision refinement steps.</p>
+<h2 id="build-and-independence">Build and independence</h2>
+<p>Requirements: a C++17 compiler, GNU make, POSIX <code>getopt_long</code>, and MPFI with its MPFR/GMP dependencies. On the course machine MPFI 1.5.4 is installed in <code>/usr/local</code>; that prefix is the Makefile default.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./validateKAM.x</span> <span class="at">--help</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> check</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> standalone-check</span></code></pre></div>
+<p>For a different arithmetic-library prefix:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> MPFI_PREFIX=/path/to/prefix</span></code></pre></div>
+<p>All interval wrappers, FFTs, candidate handling, Hamiltonian bounds, refinement, and theorem checks are in this directory. The build links only <code>-lmpfi -lmpfr -lgmp</code>, besides the compiler’s standard runtime libraries. It does not compile or link TorKam, <code>codes/lib</code>, FFTW, or any other numerical code. The FFT implementation is independent, including its interval twiddle factors.</p>
+<p><code>make standalone-check</code> copies the source files into a fresh temporary directory, builds there, and runs the tests without the surrounding course repository. Its temporary parent can be selected with <code>TMPDIR=/path/to/tmp</code>. <code>make clean</code> removes executables and preserves candidate and certificate files.</p>
+<h2 id="validate-the-supplied-epsilon-0.01-example">Validate the supplied epsilon = 0.01 example</h2>
+<p>Run from this directory:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./validateKAM.x</span> <span class="dt">\</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--input</span> ../KAMExample/results/torus-eps0p01.csv <span class="dt">\</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--epsilon</span> 1/100 <span class="dt">\</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--frequency</span> golden <span class="dt">\</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--precision</span> 256 <span class="dt">\</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--refine</span> 2 <span class="dt">\</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--certificate</span> results/eps0p01.json</span></code></pre></div>
+<p>This run uses 64 modes/points per coordinate for the candidate, a <code>256 x 256</code> validation grid, initial strip width <code>1/10</code>, final width <code>1/20</code>, and wider interpolation strip width <code>1/2</code>. These CLI widths are in <strong>radians</strong>. The geometric budget factor is 2 and the ambient domain reserve is <code>1/10</code>.</p>
+<p>The recorded result, rounded upward for readability, is:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Quantity</th>
+<th style="text-align: right;">Certified bound</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Invariance error <code>b_E</code> on the initial complex strip</td>
+<td style="text-align: right;"><code>1.149e-19</code></td>
+</tr>
+<tr class="even">
+<td>Approximate-symplecticity quantity <code>nu</code></td>
+<td style="text-align: right;"><code>1.907e-12 &lt; 1</code></td>
+</tr>
+<tr class="odd">
+<td>Theorem smallness quantity <code>theorem_condition</code></td>
+<td style="text-align: right;"><code>0.08691 &lt; 1</code></td>
+</tr>
+<tr class="even">
+<td>Convergence quantity <code>kappa</code></td>
+<td style="text-align: right;"><code>0.08666 &lt; 1</code></td>
+</tr>
+<tr class="odd">
+<td>Distance to the true invariant embedding</td>
+<td style="text-align: right;"><code>3.753e-10</code></td>
+</tr>
+<tr class="even">
+<td>Final analytic strip width in radians</td>
+<td style="text-align: right;"><code>0.05</code></td>
+</tr>
+</tbody>
+</table>
+<p>The distance is a uniform complex-strip bound in the maximum norm of the original ambient coordinates <code>(phi1,phi2,I1,I2)</code>, with a consistent angular lift. It concerns the <strong>final frozen candidate</strong>, including the specified exact action offset. No distance to the original CSV samples or pre-refinement candidate is asserted.</p>
+<h3 id="recheck-without-repeating-the-numerical-computation">Recheck without repeating the numerical computation</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./validateKAM.x</span> <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--candidate</span> results/eps0p01.json.torus <span class="dt">\</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--epsilon</span> 1/100 <span class="dt">\</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--precision</span> 320 <span class="dt">\</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--certificate</span> /tmp/eps0p01-rechecked.json</span></code></pre></div>
+<p>This exact candidate was successfully checked at both 256 and 320 bits, with the same candidate fingerprint <code>fnv1a64:6c443ca42bd2ba62</code>. The fingerprint is a convenience identifier, not a cryptographic authenticity check. The sidecar contains the actual exact coefficients.</p>
+<p>Increasing validation precision reduces arithmetic enclosure widths; it does not improve the fixed polynomial. Use <code>--refine</code> or a better numerical seed when the candidate itself is not accurate enough.</p>
+<h2 id="exact-input-semantics">Exact input semantics</h2>
+<h3 id="csv-input">CSV input</h3>
+<p><code>--input</code> accepts the 15-column format written by <code>KAMExample</code> and the course continuation program. It checks the square power-of-two grid, ordering, header, finite numbers, and compatibility with the default frequency.</p>
+<p>Only <code>u1,u2,v1,v2</code> define the periodic components. The printed residual, energy, lifted angles, and actions are not used as proof bounds. The uniform grid is reconstructed from integer indices, rather than rounded printed angles.</p>
+<p>The importer constructs coefficients, drops the Nyquist lines, imposes exact conjugate symmetry, and <strong>chooses exact dyadic coefficients</strong> at the selected precision. This defines a new explicit polynomial; it does not claim that a floating-point computation encloses the unknown invariant torus.</p>
+<p>The candidate is always</p>
+<p><span class="math display">\[
+K_0(\theta)=(\theta+u(\theta),\omega_r+v(\theta)),
+\]</span></p>
+<p>with the <strong>exact algebraic</strong> action offset <code>omega_r</code>, rather than the rounded offset in the CSV. The residual is independently recomputed for this candidate.</p>
+<h3 id="parameters-and-frequency">Parameters and frequency</h3>
+<p><code>--epsilon</code> is required and specifies an exact decimal, hexadecimal dyadic, or rational number: e.g. <code>0.03</code> or <code>3/100</code>. The CSV’s epsilon token is not silently converted into an intended decimal parameter. All evaluations use the explicit target provided on the command line.</p>
+<p>Only <code>--frequency golden</code> is supported. The exact arithmetic proof for all integer modes is in <a href="theorem.html">THEOREM.md</a>. A rounded frequency or a scan of finitely many divisors is not substituted for that proof.</p>
+<h3 id="native-candidate">Native candidate</h3>
+<p><code>--candidate</code> reads <code>KAM_CANDIDATE_V1</code> files. The first line records Fourier size and storage precision; subsequent rows contain the four complex coefficients in FFT order, as exact hexadecimal dyadics. Both Nyquist lines are zero, and <code>c[-k] = conjugate(c[k])</code> holds exactly. Native input is rejected if the chosen precision is insufficient to represent its coefficients exactly.</p>
+<p><code>--candidate-out FILE</code> exports a frozen candidate independently. If <code>--certificate FILE</code> is requested, <code>FILE.torus</code> is always written beside the report. Input/output path aliases are rejected.</p>
+<h2 id="refinement-and-validation-are-separate-stages">Refinement and validation are separate stages</h2>
+<p><code>--refine STEPS</code> defaults to <strong>zero</strong>. If requested, a local high-precision additive quasi-Newton method proposes an improved polynomial. It solves the normal and tangent cohomological equations, determines the normal average from the average torsion, and fixes the tangent average to zero. Products use a doubled grid. Each update is frozen to exact, real Fourier coefficients.</p>
+<p>The printed refinement defects are sampled diagnostics. The proof does not assume the refinement was exact or convergent: it starts over with the final frozen polynomial and computes interval enclosures and analytic tail bounds.</p>
+<p>The theorem being checked proves convergence of the <strong>modified</strong> update <code>(K + N xiN) composed with (id + xiL)</code>. As explained in the paper, the numerical seed may be produced by the additive method. A validator does not need to execute the theorem’s infinite iteration.</p>
+<h2 id="options-and-failures">Options and failures</h2>
+<p>Useful controls:</p>
+<pre class="text"><code>--modes N             truncate or extend the CSV candidate&#39;s Fourier support
+--refine STEPS        locally improve the candidate before freezing it
+--grid M              rigorous evaluation/DFT grid per angle, M &gt;= 2N
+--rho R               initial analytic width (radians)
+--rho-final R         positive final analytic width (radians)
+--rho-wide R          wider strip for interpolation and mean-tail estimates
+--domain-margin R     positive ambient analytic-domain reserve
+--sigma-factor F      strictly greater than 1; geometric budget multiplier</code></pre>
+<p>FFT sizes are powers of two. The theorem uses geometrically decreasing cuts with ratio <code>1/2</code>, fixing its first substep cut to <code>(rho-rho_final)/6</code> after conversion to period-one parameters.</p>
+<p>Exit statuses:</p>
+<ul>
+<li><code>0</code>: <strong>VALIDATED</strong> — all implemented sufficient hypotheses passed.</li>
+<li><code>1</code>: <strong>NOT_CERTIFIED</strong> — a sufficient bound or inequality failed. This is not a nonexistence conclusion.</li>
+<li><code>2</code>: invalid input, unsupported settings, or I/O failure.</li>
+</ul>
+<p>The Gram inverse is currently certified using a conservative Neumann bound around the unperturbed Gram matrix. It can fail on a wide complex strip even when a narrower-strip certificate or a better preconditioner would succeed. In particular, the supplied epsilon <code>0.03</code> CSV <strong>does not certify with the default settings</strong>: the wider-strip Gram bound fails. A positive certificate for that dataset is not included.</p>
+<h2 id="what-is-checked">What is checked</h2>
+<p>See <a href="theorem.html">THEOREM.md</a> for the detailed mathematical contract and the mapping to the paper. The implementation includes:</p>
+<ul>
+<li>real and complex MPFI enclosures, strict endpoint comparisons and directed decimal serialization;</li>
+<li>a genuinely all-mode Diophantine bound and uniform Rüssmann constants;</li>
+<li>interval FFT residual bounds plus analytic interpolation/aliasing bounds;</li>
+<li>strip-wide Gram invertibility and bounds on the tangent/normal frames;</li>
+<li>the theorem’s off-torus torsion and a rigorously enclosed average inverse;</li>
+<li>analytic vector-field and derivative bounds on explicit complex domains;</li>
+<li>embedding and regular real-domain conditions;</li>
+<li>all terms surviving in Appendix B, with conservative common-transpose majorants and the required positive budget gaps;</li>
+<li>the convergence, domain, geometry, and final closeness conditions.</li>
+</ul>
+<p>JSON intervals enclose <strong>computed quantities</strong>. Fields such as <code>b_E</code> are upper bounds on norms: their left endpoints are not lower bounds on the true norm. Matrix-average entries, in contrast, enclose the entries themselves.</p>
+<h2 id="tests">Tests</h2>
+<p><code>make check</code> runs 802 assertions, including:</p>
+<ul>
+<li>interval rational arithmetic and singular inverse rejection;</li>
+<li>analytic mixed Fourier modes, normalization, derivatives and cohomology signs;</li>
+<li>a function invisible on the grid but nonzero between grid points;</li>
+<li>aliasing of the zero Fourier mode;</li>
+<li>exact native serialization, CSV semantics, and invalid candidate invariants;</li>
+<li>CLI errors and input protection through symlinks and hard links;</li>
+<li>the exact integrable torus, including the unit-parameter torsion scaling;</li>
+<li>deliberately failing geometry and smallness conditions;</li>
+<li>an independently generated <strong>nonzero-coupling</strong> certificate at <code>epsilon=1/10000</code>.</li>
+</ul>
+<p>The epsilon <code>0.01</code> CSV-to-certificate run above is a separate end-to-end validation. The tests and standalone build need no course dataset.</p>
+<h2 id="references-and-source-organization">References and source organization</h2>
+<ul>
+<li><code>interval.h</code>: MPFI/MPFR wrappers and outward-rounded output.</li>
+<li><code>fourier.cpp</code>: FFT, finite polynomials, alias bounds and input formats.</li>
+<li><code>kamBounds.cpp</code>: explicit Hamiltonian geometry, rigorous bounds and optional numerical refinement.</li>
+<li><code>figuerasHaro.cpp</code>: Tables 1–4 and the theorem conditions.</li>
+<li><code>validateKAM.cpp</code>: command-line interface and certificate output.</li>
+</ul>
+<p>J.-Ll. Figueras and A. Haro, <strong>A modified parameterization method for invariant Lagrangian tori for partially integrable Hamiltonian systems</strong>, <em>Physica D</em> 462 (2024), 134127. <a href="https://doi.org/10.1016/j.physd.2024.134127">DOI</a>.</p>
+<p>J.-Ll. Figueras, A. Haro and A. Luque, <strong>Rigorous Computer-Assisted Application of KAM Theory: A Modern Approach</strong>, <em>Foundations of Computational Mathematics</em> 17 (2017), 1123–1193. <a href="https://doi.org/10.1007/s10208-016-9339-3">DOI</a>.</p>
+<p>The sources are BSD-2-Clause licensed. They implement the cited mathematics locally; no TorKam source or Numerical Recipes FFT code is incorporated.</p>
+
+    </main>
+    <nav class="menu" aria-label="Course navigation">
+      <div class="menu_title">Course materials</div>
+      <ul><li><a href="index.html">Course overview</a></li>
+<li><a href="getting-started.html">Getting started</a></li>
+<li><a href="pendula.html">Coupled-pendulum examples</a></li>
+<li><a href="numerical-kam.html">Numerical KAM solver</a></li>
+<li><a href="validation.html" aria-current="page">Rigorous validation</a></li>
+<li><a href="theorem.html">Validation theorem</a></li>
+<li><a href="numerical-library.html">Numerical library</a></li>
+<li><a href="validation-results.html">Recorded validation results</a></li></ul>
+      <div class="menu_title">Downloads</div>
+      <ul>
+        <li><a href="slides/slides.pdf">Lecture slides (PDF)</a></li>
+        <li><a href="downloads/numerics-and-validation-of-kam-tori.zip" download>All materials (ZIP)</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div id="main_content_bottom"></div>
+  <div id="footer"><strong>Last update: 2026-09-21</strong> | Jordi-Llu&iacute;s Figueras</div>
+</div>
+</body>
+</html>

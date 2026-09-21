@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Numerical library — Numerics and validation of KAM tori, Kraków 2026, Jordi-Lluís Figueras.">
+  <title>Numerical library | Numerics and validation of KAM tori</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="course.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div id="container">
+  <div id="header">Jordi-Lluís Figueras personal website</div>
+  <div id="sub_header">Numerics and validation of KAM tori</div>
+  <div id="main_content_top"></div>
+  <div id="main_content">
+    <main class="content">
+      <p><a href="../../index.html">Home</a> / <a href="index.html">KAM course</a></p>
+      <div class="notice"><strong>Working directory:</strong> run this guide’s commands from <code>toWebSite/codes/lib/</code>, unless stated otherwise. <a href="getting-started.html">Setup and complete workflow</a> · <a href="codes/lib/README.md">Original Markdown</a>.</div><h1 id="common-kam-numerical-code">Common KAM numerical code</h1>
+<p><code>kam.h</code> / <code>kam.cpp</code> implement the FFT, spectral differentiation, interpolation, cohomological inverse, coupled-rotator Hamiltonian, adapted frame, torsion, quasi-Newton correction, fine-grid checks, phase normalization and CSV output. Both <code>../KAMExample</code> and <code>../continuation</code> compile this implementation directly into their executables; no external numerical library is needed.</p>
+<p><code>solveTorus(Field&amp;, Options, ostream*, bool damping)</code> accepts a supplied initial torus and returns a <code>SolveResult</code> without writing files. The optional stream receives the original example’s convergence log. Damping adds residual-based backtracking. On failure, the field may hold an improved but unconverged iterate; callers must preserve their own last accepted torus.</p>
+<p>The coordinate order is <code>(phi1,phi2,I1,I2)</code>. A <code>Field</code> contains only the periodic part <code>(u1,u2,v1,v2)</code> of <code>K(theta)=(theta+u,omega+v)</code>. The conventions are <code>Lie_omega=-omega.dot(partial_theta)</code> and <code>J=[0,Id;-Id,0]</code>.</p>
+<p><code>normalizePhase</code> translates the entire Fourier embedding to make <code>&lt;u&gt;=0</code>. Subtracting the mean of <code>u</code> without translating the other components would change the invariant torus and is not equivalent.</p>
+<p>The implementation follows the separately BSD-licensed TorKam Lagrangian solver. Attribution and the full redistribution notice are retained at the top of <code>kam.cpp</code>; nothing from the external TorKam installation is linked.</p>
+
+    </main>
+    <nav class="menu" aria-label="Course navigation">
+      <div class="menu_title">Course materials</div>
+      <ul><li><a href="index.html">Course overview</a></li>
+<li><a href="getting-started.html">Getting started</a></li>
+<li><a href="pendula.html">Coupled-pendulum examples</a></li>
+<li><a href="numerical-kam.html">Numerical KAM solver</a></li>
+<li><a href="validation.html">Rigorous validation</a></li>
+<li><a href="theorem.html">Validation theorem</a></li>
+<li><a href="numerical-library.html" aria-current="page">Numerical library</a></li>
+<li><a href="validation-results.html">Recorded validation results</a></li></ul>
+      <div class="menu_title">Downloads</div>
+      <ul>
+        <li><a href="slides/slides.pdf">Lecture slides (PDF)</a></li>
+        <li><a href="downloads/numerics-and-validation-of-kam-tori.zip" download>All materials (ZIP)</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div id="main_content_bottom"></div>
+  <div id="footer"><strong>Last update: 2026-09-21</strong> | Jordi-Llu&iacute;s Figueras</div>
+</div>
+</body>
+</html>

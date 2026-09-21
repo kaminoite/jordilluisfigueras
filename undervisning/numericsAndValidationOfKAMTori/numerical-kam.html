@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Numerical KAM solver — Numerics and validation of KAM tori, Kraków 2026, Jordi-Lluís Figueras.">
+  <title>Numerical KAM solver | Numerics and validation of KAM tori</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="course.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div id="container">
+  <div id="header">Jordi-Lluís Figueras personal website</div>
+  <div id="sub_header">Numerics and validation of KAM tori</div>
+  <div id="main_content_top"></div>
+  <div id="main_content">
+    <main class="content">
+      <p><a href="../../index.html">Home</a> / <a href="index.html">KAM course</a></p>
+      <div class="notice"><strong>Working directory:</strong> run this guide’s commands from <code>toWebSite/codes/KAMExample/</code>, unless stated otherwise. <a href="getting-started.html">Setup and complete workflow</a> · <a href="codes/KAMExample/README.md">Original Markdown</a>.</div><h1 id="a-standalone-kam-example">A standalone KAM example</h1>
+<p>Build and run with a C++17 compiler and GNU make:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./exampleKAM.x</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./exampleKAM.x</span> <span class="at">--help</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> check</span></code></pre></div>
+<p>No TorKam, FFTW, GMP, MPFR, or other numerical library is required. The only non-standard C++ interface is POSIX/GNU <code>getopt_long</code> for command-line parsing (available on the course’s Linux environment).</p>
+<p>The numerical routines now live in the local common library <code>../lib/kam.h</code> and <code>../lib/kam.cpp</code>, shared with <code>../continuation</code>. The Makefile compiles that source automatically. Keep <code>codes/lib/</code> alongside this directory when copying the example; it is self-contained within the course repository.</p>
+<h2 id="hamiltonian-and-notation">Hamiltonian and notation</h2>
+<p>The two-degree-of-freedom example is</p>
+<p><span class="math display">\[
+H_\varepsilon(\varphi,I)=\tfrac12(I_1^2+I_2^2)
++\varepsilon[\cos\varphi_1+\cos\varphi_2+\cos(\varphi_1-\varphi_2)].
+\]</span></p>
+<p>At zero coupling, <code>I=omega</code> is an invariant torus. The mixed cosine couples the two rotators. We prescribe <code>omega=(1,(1+sqrt(5))/2)</code> by default and find</p>
+<p><span class="math display">\[
+K(\theta)=(\theta+u(\theta),\omega+v(\theta)),\qquad
+X_H(K)-DK\,\omega=0.
+\]</span></p>
+<p>Both <code>u</code> and <code>v</code> are periodic; the nonperiodic lift <code>theta</code> is never sent through the FFT. Angles have period <strong>2 pi</strong>, and the ordering is <strong>(phi1,phi2,I1,I2)</strong>. The initial guess is <code>u=v=0</code>.</p>
+<h2 id="connection-to-torkam-and-the-slides">Connection to TorKam and the slides</h2>
+<p>The geometric step follows the separately BSD-licensed <code>src_UTILS/KAMLagrangian.cpp</code> in <code>/home/figueras/work/UTILS/lib_TorKam/torkam-dev</code>, especially <code>compute_N_LAG</code>, <code>compute_invP_LAG</code>, <code>compute_torsion_LAG</code>, <code>compute_etaK</code>, <code>solve_xi_of_K_LAG</code>, and <code>KAM_LAG_step</code>. The standalone implementation replaces its multiprecision grids and linear tools with <code>std::vector</code>, <code>std::complex</code>, a radix-2 FFT and checked 2-by-2 matrix operations. The common source credits the original routines and retains their copyright/license notice.</p>
+<p>Each correction follows the slide sequence:</p>
+<ol type="1">
+<li>Compute <code>L=DK</code> and <code>E=X_H(K)-L*omega</code> using spectral differentiation.</li>
+<li>Construct <code>N=-J*L*(L^T*L)^(-1)</code> and store <code>P=(L,N)</code> as its two blocks.</li>
+<li>Use <code>Q=-J*P^T*J</code> as the approximate inverse and compute <code>eta=-Q*E=(N^T*J*E,-L^T*J*E)</code>.</li>
+<li>Compute <code>T=-N^T*J*(Lie_omega N+DX_H(K)*N)</code>.</li>
+<li>Solve the nonzero Fourier modes of <code>Lie_omega xiN=etaN</code>, where <code>Lie_omega=-omega.dot(partial_theta)</code> and the divisor is <code>-i*k.dot(omega)</code>.</li>
+<li>Solve <code>&lt;T&gt;*c=&lt;etaL-T*tildeXiN&gt;</code> to fix <code>&lt;xiN&gt;=c</code>.</li>
+<li>Solve <code>Lie_omega xiL=etaL-T*xiN</code>, setting <code>&lt;xiL&gt;=0</code> to fix the phase.</li>
+<li>Update the periodic part by <code>Delta=L*xiL+N*xiN</code> and recompute the residual.</li>
+</ol>
+<p>The normal equation’s average vanishes geometrically; the program prints its numerical size before projecting it out. Singular/ill-conditioned Gram or average torsion matrices and numerically unresolved divisors cause failure. Custom frequencies are checked only on the retained modes; this finite check is not a Diophantine proof.</p>
+<h2 id="fourier-resolution-and-output">Fourier resolution and output</h2>
+<p><code>-n N</code> retains modes with <code>|k1|,|k2| &lt; N/2</code>; Nyquist lines are excluded to avoid ambiguities in real-valued interpolation. Nonlinear operations are evaluated on a <strong>2N by 2N</strong> zero-padded grid. This avoids aliasing into the retained band for quadratic products of retained series and reduces aliasing for the nonpolynomial operations. The latter are checked through the final residual.</p>
+<p>Convergence requires the unprojected residual to be below <code>--tolerance</code> on the work grid <strong>and</strong> a <strong>4N by 4N</strong> check grid. The program also reports the energy oscillation and the largest embedding coefficient in the outer quarter of the Fourier band. These are floating-point numerical checks, not rigorous bounds or an existence validation. A stalled iteration may need a larger <code>-n</code>, a smaller perturbation, or a tolerance compatible with double precision.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./exampleKAM.x</span> <span class="at">-e</span> 0.01 <span class="at">-n</span> 32 <span class="at">-t</span> 1e-11 <span class="at">-o</span> torus.csv</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./exampleKAM.x</span> <span class="at">-e</span> 0.03 <span class="at">-n</span> 64 <span class="at">-t</span> 1e-10 <span class="at">-o</span> torus-finer.csv</span></code></pre></div>
+<p>The CSV contains the base grid, the lifted embedding, its periodic parts, the four residual components, and the energy. Its first comment line records epsilon and omega. <code>phi1</code> and <code>phi2</code> are unwrapped; reduce modulo <code>2*pi</code> for plots if desired. Output is written only on convergence. Exit status is zero on success, one on numerical/I/O failure, and two for invalid options. <code>make clean</code> removes the executable and preserves computed CSV files.</p>
+<p><code>make check</code> runs analytic checks of Fourier differentiation, the cohomological inverse, dealiased multiplication and Hamiltonian derivatives, followed by integrable and coupled end-to-end computations. The latter use <code>/dev/null</code> instead of creating output files.</p>
+<h2 id="rigorous-existence-validation">Rigorous existence validation</h2>
+<p>The separate, self-contained C++ program in <a href="validation.html"><code>../validation/</code></a> checks the modified Figueras–Haro a posteriori theorem for this Hamiltonian and the exact golden-ratio frequency. It requires MPFI/MPFR/GMP and does not link TorKam or the numerical common library.</p>
+<p>From this directory, for example:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> ../validation</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">../validation/validateKAM.x</span> <span class="at">--input</span> results/torus-eps0p01.csv <span class="dt">\</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--epsilon</span> 1/100 <span class="at">--precision</span> 256 <span class="at">--refine</span> 2 <span class="at">--certificate</span> validation.json</span></code></pre></div>
+<p>The optional refinement improves the seed at multiprecision; the validator then independently checks a frozen Fourier polynomial with interval arithmetic and analytic tail bounds. The exact frequency and action offset are specified algebraically, rather than treating the rounded CSV frequency as Diophantine. See the validator’s README for a successful nonzero-coupling certificate, rechecking instructions, precise input semantics, and scope.</p>
+<h2 id="reproduce-the-numerical-slides">Reproduce the numerical slides</h2>
+<p>The optional plotting stage requires Python 3, NumPy and Matplotlib:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> pip install numpy matplotlib</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> figures</span></code></pre></div>
+<p><code>plot_results.py</code> runs the solver at <code>epsilon=0.01</code> and <code>0.03</code>, both with <code>N=64</code> and tolerance <code>1e-12</code>. It saves fresh torus CSV files, solver logs, convergence histories, diagnostic tables, and <code>summary.json</code> under <code>results/</code>. The four figures (PDF and PNG) and a small TeX file of measured values are written to <code>../../slides/images/kam-*</code>. The standalone solver itself still needs only C++.</p>
+<p>The plots show:</p>
+<ul>
+<li>Sampled residual versus quasi-Newton correction count, on the <code>2N</code> work grid.</li>
+<li>The two action displacements over the parameter torus for <code>epsilon=0.03</code>.</li>
+<li>Fourier coefficient envelopes and the residual of <strong>truncations of the same converged torus</strong> to <code>N=8,16,32,64</code>, each checked on a <code>4N</code> grid. These are not independent Newton runs at the smaller resolutions.</li>
+<li><code>K(theta0+omega*t)</code> against independent RK4 integration on <code>0 &lt;= t &lt;= 20</code>, with time-step halving to distinguish integration error from torus error.</li>
+</ul>
+<p>The script independently recomputes the final fine-grid residual using NumPy and checks the trajectory agreement before completing. Its figure labels and slide captions refer to sampled numerical errors, not rigorous sup-norm bounds. It leaves the default <code>torus.csv</code> from manual runs untouched.</p>
+
+    </main>
+    <nav class="menu" aria-label="Course navigation">
+      <div class="menu_title">Course materials</div>
+      <ul><li><a href="index.html">Course overview</a></li>
+<li><a href="getting-started.html">Getting started</a></li>
+<li><a href="pendula.html">Coupled-pendulum examples</a></li>
+<li><a href="numerical-kam.html" aria-current="page">Numerical KAM solver</a></li>
+<li><a href="validation.html">Rigorous validation</a></li>
+<li><a href="theorem.html">Validation theorem</a></li>
+<li><a href="numerical-library.html">Numerical library</a></li>
+<li><a href="validation-results.html">Recorded validation results</a></li></ul>
+      <div class="menu_title">Downloads</div>
+      <ul>
+        <li><a href="slides/slides.pdf">Lecture slides (PDF)</a></li>
+        <li><a href="downloads/numerics-and-validation-of-kam-tori.zip" download>All materials (ZIP)</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div id="main_content_bottom"></div>
+  <div id="footer"><strong>Last update: 2026-09-21</strong> | Jordi-Llu&iacute;s Figueras</div>
+</div>
+</body>
+</html>
