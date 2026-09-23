@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Primebble: a solitaire prime-number board game." />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Primebble</title>
+<link href="../style.css" rel="stylesheet" type="text/css" />
+<style>
+
+:root{
+  --bg:#f4f1e8; --panel:#fffdf7; --ink:#222; --muted:#6f6a5e; --grid:#a89f8a;
+  --tile:#f0d49a; --tile2:#e5c37f; --accent:#22577a; --good:#2f7d32; --bad:#9b2c2c;
+  --dl:#c7e7f4; --tl:#8fcde4; --dp:#f5c4d7; --tp:#e992b2;
+}
+#primebbleApp{color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+#primebbleApp .primebble-intro{margin:0 0 1rem;line-height:1.5}
+#primebbleApp .layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:20px;align-items:start}
+@media(max-width:1100px){#primebbleApp .layout{grid-template-columns:minmax(0,1fr)}}
+#primebbleApp .panel{min-width:0;background:var(--panel);border:1px solid #d9d2c2;border-radius:14px;padding:14px}
+#primebbleApp .topbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+#primebbleApp .stat{padding:7px 10px;border:1px solid #d8d0bf;border-radius:999px;background:#fff}
+#primebbleApp .board-wrap{overflow:auto;padding-bottom:4px}
+#board{display:grid;grid-template-columns:repeat(11,48px);grid-template-rows:repeat(11,48px);gap:2px;width:max-content;background:#bfb6a4;padding:2px;border-radius:8px}
+#primebbleApp .cell{position:relative;border:0;background:#eee9de;min-width:48px;min-height:48px;font:inherit;cursor:pointer;padding:0}
+#primebbleApp .cell:focus-visible,#primebbleApp .rack-tile:focus-visible,#primebbleApp button:focus-visible{outline:3px solid #111;outline-offset:2px}
+#primebbleApp .cell.dl{background:var(--dl)} #primebbleApp .cell.tl{background:var(--tl)} #primebbleApp .cell.dp{background:var(--dp)} #primebbleApp .cell.tp{background:var(--tp)}
+#primebbleApp .premium{position:absolute;inset:auto 2px 2px 2px;font-size:9px;font-weight:700;color:#5f5860;pointer-events:none}
+#primebbleApp .digit-tile{position:absolute;inset:4px;border-radius:6px;background:linear-gradient(145deg,var(--tile),var(--tile2));border:1px solid #b7914f;display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:750;box-shadow:0 1px 1px #0002}
+#primebbleApp .digit-tile.pending{box-shadow:inset 0 0 0 3px var(--accent)}
+#primebbleApp .rack{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin:12px 0}
+#primebbleApp .rack-tile{min-width:0;padding:0;height:54px;border:1px solid #b7914f;border-radius:7px;background:linear-gradient(145deg,var(--tile),var(--tile2));font-size:27px;font-weight:750;cursor:pointer;position:relative}
+#primebbleApp .rack-tile.selected{outline:4px solid var(--accent)}
+#primebbleApp .rack-tile.empty{visibility:hidden}
+#primebbleApp .pts{position:absolute;right:5px;bottom:2px;font-size:10px;font-weight:600;color:#5e4b2c}
+#primebbleApp .actions{display:flex;gap:8px;flex-wrap:wrap}
+#primebbleApp button.action{border:1px solid #aaa08c;background:white;border-radius:8px;padding:10px 12px;font-weight:650;cursor:pointer}
+#primebbleApp button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+#primebbleApp button.action:disabled{opacity:.45;cursor:not-allowed}
+#primebbleApp #message{min-height:48px;margin-top:12px;padding:10px;border-radius:8px;background:#f0ede5;color:#403b32}
+#primebbleApp #message.good{background:#e8f4e8;color:#235c26} #primebbleApp #message.bad{background:#fae7e7;color:#7a2525}
+#primebbleApp .legend{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:14px}
+#primebbleApp .key{display:flex;align-items:center;gap:8px}#primebbleApp .sw{width:24px;height:24px;border:1px solid #bbb;border-radius:4px}
+#primebbleApp .move-list{margin:8px 0 0;padding-left:20px}#primebbleApp .move-list li{margin:4px 0}
+#primebbleApp .small{font-size:13px;color:var(--muted)}
+#primebbleApp .rules{font-size:14px;line-height:1.45}#primebbleApp .rules ul{padding-left:20px}
+#primebbleApp hr{border:0;border-top:1px solid #ddd4c3;margin:14px 0}
+#primebbleApp .seedrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}#primebbleApp .seedrow code{background:#eee9df;padding:4px 6px;border-radius:5px;overflow-wrap:anywhere}
+
+
+  #container
+  {
+    width: 96%;
+    max-width: 1240px;
+  }
+  .primebblePage
+  {
+    padding: 0 30px 20px;
+  }
+  #primebbleApp
+  {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .primebbleBack
+  {
+    margin-top: 18px;
+    font-size: 13px;
+  }
+  #primebbleApp .about-toggle
+  {
+    margin-bottom: 16px;
+  }
+  #primebbleAbout
+  {
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  #primebbleAbout h2
+  {
+    margin-top: 0;
+    color: var(--accent);
+    font-size: 22px;
+  }
+  #primebbleAbout h3
+  {
+    font-size: 18px;
+  }
+  #primebbleAbout .comparison-scroll
+  {
+    overflow-x: auto;
+  }
+  #primebbleAbout .comparison-scroll:focus-visible
+  {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+  #primebbleAbout table
+  {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  #primebbleAbout caption
+  {
+    text-align: left;
+    font-weight: bold;
+    padding-bottom: 8px;
+  }
+  #primebbleAbout th, #primebbleAbout td
+  {
+    padding: 8px 10px;
+    border-bottom: 1px solid #d9d2c2;
+    text-align: right;
+  }
+  #primebbleAbout td
+  {
+    white-space: nowrap;
+  }
+  #primebbleAbout thead, #primebbleAbout .rack-crossover
+  {
+    background: #e8f4e8;
+  }
+  #primebbleAbout .sources
+  {
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+  @media(max-width: 760px)
+  {
+    .primebblePage
+    {
+      padding: 0 10px 16px;
+    }
+    #primebbleApp #board
+    {
+      grid-template-columns: repeat(11, 40px);
+      grid-template-rows: repeat(11, 40px);
+    }
+    #primebbleApp .cell
+    {
+      min-width: 40px;
+      min-height: 40px;
+    }
+    #primebbleApp .digit-tile
+    {
+      font-size: 21px;
+    }
+    #primebbleApp .rack
+    {
+      gap: 4px;
+    }
+  }
+
+</style>
+</head>
+<body>
+<div id="container">
+  <div id="header">Jordi-Llu&iacute;s Figueras personal website</div>
+  <div id="sub_header">Primebble &mdash; Prime Scrabble</div>
+  <div id="main_content_top"></div>
+  <div id="main_content">
+    <div class="primebblePage">
+      <div id="primebbleApp">
+
+  <p class="primebble-intro"><strong>Primebble</strong> is a solitaire crossword game with prime numbers. Place digit tiles so that every new horizontal or vertical number is prime.</p>
+
+  <button class="action about-toggle" id="aboutBtn" type="button" aria-expanded="false" aria-controls="primebbleAbout">Why primes? Primebble and Scrabble</button>
+  <section class="panel" id="primebbleAbout" aria-labelledby="aboutHeading" hidden>
+    <h2 id="aboutHeading">Why primes? A shared game across cultures</h2>
+    <p>I believe that building this game around prime numbers is far better than making it depend on a particular language. Primality is universal: a number is prime regardless of the language we speak or the culture we come from. With the same decimal digits and rules, we can all share the same mathematical playing field, without needing to learn a language-specific word list.</p>
+    <p>Like Scrabble, Primebble gives you a seven-tile rack, a board with bonus squares, and the challenge of making intersecting sequences. Here the tiles are digits, and every new horizontal or vertical number of at least two digits must be prime. The browser checks this mathematically, rather than looking it up in a dictionary.</p>
+
+    <h3>How large is the “dictionary”?</h3>
+    <p>For this comparison, a Primebble “word” means an ordinary prime written in decimal with no leading zero. The number of <var>n</var>-digit primes is exactly <strong>π(10<sup>n</sup>) − π(10<sup>n−1</sup>)</strong>, where π(<var>x</var>) counts primes at most <var>x</var>.</p>
+    <p>The Spanish counts use <strong>FILE 2017</strong>, an official Spanish Scrabble lexicon. The English counts use <strong>TWL06</strong>, the 2006 North American tournament word list, as a reproducible historical reference. English Scrabble has different regional lexicons and editions; these figures are specific to TWL06, not to the current NASPA or Collins lists.</p>
+    <p class="small">Counts are exact; ratios are rounded. On a narrow screen, scroll the table horizontally to see both comparisons.</p>
+    <div class="comparison-scroll" role="region" aria-labelledby="comparisonCaption" tabindex="0">
+      <table>
+        <caption id="comparisonCaption">Words and primes by length (letters or decimal digits)</caption>
+        <thead>
+          <tr><th scope="col">Length</th><th scope="col">Spanish<br>FILE 2017</th><th scope="col">English<br>TWL06</th><th scope="col">Primebble<br>Primes</th><th scope="col">Primes /<br>Spanish</th><th scope="col">Primes /<br>English</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">1</th><td>0</td><td>0</td><td>4</td><td>—</td><td>—</td></tr>
+          <tr><th scope="row">2</th><td>87</td><td>101</td><td>21</td><td>0.24×</td><td>0.21×</td></tr>
+          <tr><th scope="row">3</th><td>498</td><td>1,015</td><td>143</td><td>0.29×</td><td>0.14×</td></tr>
+          <tr><th scope="row">4</th><td>2,961</td><td>4,030</td><td>1,061</td><td>0.36×</td><td>0.26×</td></tr>
+          <tr><th scope="row">5</th><td>10,805</td><td>8,938</td><td>8,363</td><td>0.77×</td><td>0.94×</td></tr>
+          <tr class="rack-crossover"><th scope="row">6</th><td>25,180</td><td>15,788</td><td>68,906</td><td>2.74×</td><td>4.36×</td></tr>
+          <tr class="rack-crossover"><th scope="row">7</th><td>48,609</td><td>24,029</td><td>586,081</td><td>12.1×</td><td>24.4×</td></tr>
+          <tr><th scope="row">8</th><td>74,768</td><td>29,766</td><td>5,096,876</td><td>68.2×</td><td>171×</td></tr>
+          <tr><th scope="row">9</th><td>95,723</td><td>29,150</td><td>45,086,079</td><td>471×</td><td>1,547×</td></tr>
+          <tr><th scope="row">10</th><td>104,778</td><td>22,326</td><td>404,204,977</td><td>3,858×</td><td>18,105×</td></tr>
+          <tr><th scope="row">11</th><td>96,570</td><td>16,165</td><td>3,663,002,302</td><td>37,931×</td><td>226,601×</td></tr>
+          <tr><th scope="row">12</th><td>76,342</td><td>11,417</td><td>33,489,857,205</td><td>438,700×</td><td>2.93 million ×</td></tr>
+          <tr><th scope="row">13</th><td>53,252</td><td>7,750</td><td>308,457,624,821</td><td>5.79 million ×</td><td>39.8 million ×</td></tr>
+          <tr><th scope="row">14</th><td>31,659</td><td>5,059</td><td>2,858,876,213,963</td><td>90.3 million ×</td><td>565 million ×</td></tr>
+          <tr><th scope="row">15</th><td>16,530</td><td>3,157</td><td>26,639,628,671,867</td><td>1.61 billion ×</td><td>8.44 billion ×</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">The four one-digit primes are 2, 3, 5, and 7; this game requires numbers of at least two digits. The current board is 11 × 11, so lengths 12–15 are included for comparison only.</p>
+
+    <h3>What matters for the seven-tile rack?</h3>
+    <p><strong>The crossover occurs between five and six symbols in both lexicons.</strong> For lengths two through five there are fewer primes than Spanish or English words. At six and seven digits the prime counts are already much larger.</p>
+    <ul>
+      <li><strong>Spanish, lengths 2–7:</strong> 88,140 words.</li>
+      <li><strong>English, lengths 2–7:</strong> 53,901 words.</li>
+      <li><strong>Primebble, lengths 2–7:</strong> 664,575 primes — about <strong>7.54×</strong> the Spanish count and <strong>12.33×</strong> the English count.</li>
+    </ul>
+    <p>At length seven alone there are <strong>586,081 primes</strong>, compared with <strong>48,609 Spanish words</strong> and <strong>24,029 English words</strong>: about 12.1× and 24.4× as many, respectively.</p>
+    <p>This raises an interesting game-design question: does accepting every prime make long plays easier or more common? Dictionary size alone cannot answer it. Digits and letters have different tile distributions, many sequences require the same collection of tiles, and every crossing must also be valid. In fact, although the number of primes grows rapidly with length, the proportion of all numbers that are prime decreases.</p>
+    <p>I would like to study <strong>the probability that a random seven-tile rack admits a legal prime play</strong>, using the actual tile bag and board constraints, and compare that with Scrabble. That is likely to tell us much more about how the games feel than the size of their dictionaries alone.</p>
+
+    <h3>Sources and counting conventions</h3>
+    <ul class="sources">
+      <li><strong>Spanish:</strong> the FILE 2017 word-length counts supplied for this comparison, computed from the published lexicon file.</li>
+      <li><strong>English:</strong> <a href="https://norvig.com/ngrams/TWL06.txt">Peter Norvig’s published TWL06 text file</a>. Counts were computed from distinct alphabetic entries, grouped by letter count: 178,691 entries of lengths 2–15 in total. For a newer North American edition, see <a href="https://www.scrabbleplayers.org/w/NWL2023">NASPA’s NWL2023 description</a>.</li>
+      <li><strong>Primes:</strong> differences of the exact <a href="https://t5k.org/howmany.html#table">PrimePages values of π(10<sup>n</sup>)</a>, with π(1) = 0. No approximation from the prime number theorem is used in the counts.</li>
+      <li>Word length here means letters in the lexicon entries, not necessarily physical tiles: Spanish Scrabble also has CH, LL, and RR tiles. The 2–7 totals compare sequence lengths, rather than the probability of making a play from a rack.</li>
+    </ul>
+  </section>
+
+  <div class="topbar">
+    <div class="stat">Score: <strong id="score">0</strong></div>
+    <div class="stat">Bag: <strong id="bagCount">0</strong></div>
+    <div class="stat">Best prime: <strong id="bestPrime">—</strong></div>
+  </div>
+
+  <div class="layout">
+    <section class="panel">
+      <div class="board-wrap"><div id="board" aria-label="Primebble board"></div></div>
+      <div class="rack" id="rack" aria-label="Digit rack"></div>
+      <div class="actions">
+        <button class="action primary" id="playBtn" type="button">Play move</button>
+        <button class="action" id="undoBtn" type="button">Return pending tiles</button>
+        <button class="action" id="exchangeBtn" type="button">Exchange rack (−10)</button>
+      </div>
+      <div id="message" aria-live="polite">Select a rack digit, then click an empty square.</div>
+    </section>
+
+    <aside class="panel">
+      <div class="seedrow"><strong>Game:</strong> <code id="seedLabel"></code></div>
+      <div class="actions" style="margin-top:8px">
+        <button class="action" id="dailyBtn" type="button">Today's game</button>
+        <button class="action" id="randomBtn" type="button">New random game</button>
+      </div>
+      <hr>
+      <strong>Current move</strong>
+      <div id="moveInfo" class="small">No pending tiles.</div>
+      <hr>
+      <div class="legend">
+        <div class="key"><span class="sw" style="background:var(--dl)"></span>Double digit</div>
+        <div class="key"><span class="sw" style="background:var(--tl)"></span>Triple digit</div>
+        <div class="key"><span class="sw" style="background:var(--dp)"></span>Double prime</div>
+        <div class="key"><span class="sw" style="background:var(--tp)"></span>Triple prime</div>
+      </div>
+      <hr>
+      <div class="rules">
+        <strong>Prototype rules</strong>
+        <ul>
+          <li>Place one or more rack digits in one row or one column.</li>
+          <li>The first move must cover the center square.</li>
+          <li>Later moves must touch the existing position.</li>
+          <li>Every new maximal horizontal/vertical string of length ≥2 must be prime.</li>
+          <li>Leading zeroes are illegal.</li>
+          <li>Premium squares count only when first covered.</li>
+          <li>Using all 7 rack tiles gives +50.</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+      </div>
+      <div class="primebbleBack"><a href="../index.html" class="menu_link">Go back to Main Page</a></div>
+    </div>
+    <div id="clear"></div>
+  </div>
+  <div id="main_content_bottom"></div>
+  <div id="footer"><strong>Last update: 2026-09-23</strong> | Jordi-Llu&iacute;s Figueras</div>
+</div>
+<script>
+
+(() => {
+'use strict';
+const N = 11, CENTER = 5;
+const tilePoints = [4,1,3,1,3,2,3,1,3,1];
+const counts = [5,8,5,8,5,5,5,8,5,8];
+const premium = new Map();
+const setP=(t,pts)=>pts.forEach(([r,c])=>premium.set(`${r},${c}`,t));
+setP('TP',[[0,0],[0,10],[10,0],[10,10]]);
+setP('DP',[[0,5],[5,0],[5,5],[5,10],[10,5],[2,5],[5,2],[5,8],[8,5]]);
+setP('TL',[[1,3],[1,7],[3,1],[3,9],[7,1],[7,9],[9,3],[9,7]]);
+setP('DL',[[2,2],[2,8],[4,4],[4,6],[6,4],[6,6],[8,2],[8,8],[3,5],[5,3],[5,7],[7,5]]);
+
+let board, rack, bag, pending, selectedRack, score, bestPrime, committedCount, gameSeed;
+const el=id=>document.getElementById(id);
+
+function xmur3(str){
+  let h=1779033703^str.length;
+  for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19;}
+  return function(){h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);return (h^h>>>16)>>>0;};
+}
+function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296;};}
+function rngFor(seed){return mulberry32(xmur3(seed)());}
+function shuffle(a,rand){for(let i=a.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function todaySeed(){const d=new Date(); const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `daily-${y}-${m}-${day}`;}
+
+function makeBag(seed){
+  const a=[]; counts.forEach((ct,d)=>{for(let k=0;k<ct;k++)a.push(d);});
+  return shuffle(a,rngFor(seed));
+}
+function emptyBoard(){return Array.from({length:N},()=>Array(N).fill(null));}
+function draw(){return bag.length?bag.pop():null;}
+function refillRack(){for(let i=0;i<7;i++) if(rack[i]===null) rack[i]=draw();}
+
+function start(seed){
+  gameSeed=seed; board=emptyBoard(); rack=Array(7).fill(null); bag=makeBag(seed); pending=new Map(); selectedRack=null;
+  score=0; bestPrime=null; committedCount=0; refillRack(); render(); setMessage('Select a rack digit, then click an empty square.','');
+}
+
+function render(){
+  el('score').textContent=score; el('bagCount').textContent=bag.length; el('bestPrime').textContent=bestPrime===null?'—':bestPrime.toString(); el('seedLabel').textContent=gameSeed;
+  const b=el('board'); b.innerHTML='';
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+    const btn=document.createElement('button'); btn.type='button'; btn.className='cell'; btn.dataset.r=r;btn.dataset.c=c; btn.setAttribute('aria-label',`row ${r+1}, column ${c+1}`);
+    const p=premium.get(`${r},${c}`); if(p){btn.classList.add(p.toLowerCase()); const lab=document.createElement('span');lab.className='premium';lab.textContent=p;btn.appendChild(lab);}
+    const pend=pending.get(`${r},${c}`); const val=pend?pend.digit:board[r][c];
+    if(val!==null && val!==undefined){const t=document.createElement('span');t.className='digit-tile'+(pend?' pending':'');t.textContent=val;btn.appendChild(t);}
+    btn.addEventListener('click',()=>cellClick(r,c)); b.appendChild(btn);
+  }
+  const rr=el('rack');rr.innerHTML='';
+  rack.forEach((d,i)=>{const btn=document.createElement('button');btn.type='button';btn.className='rack-tile'+(d===null?' empty':'')+(selectedRack===i?' selected':'');btn.disabled=d===null;btn.setAttribute('aria-label',d===null?'empty rack slot':`digit ${d}`);if(d!==null){btn.textContent=d;const sp=document.createElement('span');sp.className='pts';sp.textContent=tilePoints[d];btn.appendChild(sp);}btn.addEventListener('click',()=>{selectedRack=(selectedRack===i?null:i);render();});rr.appendChild(btn);});
+  updateMoveInfo();
+}
+
+function cellClick(r,c){
+  const key=`${r},${c}`;
+  if(pending.has(key)){
+    const p=pending.get(key); rack[p.rackIndex]=p.digit; pending.delete(key); selectedRack=null; render(); return;
+  }
+  if(board[r][c]!==null){setMessage('That square is already occupied.','bad');return;}
+  if(selectedRack===null || rack[selectedRack]===null){setMessage('Select a rack digit first.','bad');return;}
+  pending.set(key,{r,c,digit:rack[selectedRack],rackIndex:selectedRack}); rack[selectedRack]=null; selectedRack=null; render();
+}
+function combinedDigit(r,c){const p=pending.get(`${r},${c}`); return p?p.digit:board[r][c];}
+function occupied(r,c){return r>=0&&r<N&&c>=0&&c<N&&combinedDigit(r,c)!==null;}
+function lineThrough(r,c,dr,dc){
+  let sr=r,sc=c; while(occupied(sr-dr,sc-dc)){sr-=dr;sc-=dc;}
+  const cells=[]; let rr=sr,cc=sc; while(occupied(rr,cc)){cells.push([rr,cc]);rr+=dr;cc+=dc;}
+  return cells;
+}
+function lineKey(cells){return cells.map(([r,c])=>`${r},${c}`).join('|');}
+function digitsOf(cells){return cells.map(([r,c])=>combinedDigit(r,c)).join('');}
+
+function validateMove(){
+  const ps=[...pending.values()];
+  if(ps.length===0)return {ok:false,error:'Place at least one tile.'};
+  const sameR=ps.every(p=>p.r===ps[0].r), sameC=ps.every(p=>p.c===ps[0].c);
+  if(ps.length>1 && !sameR && !sameC)return {ok:false,error:'All newly placed tiles must lie in one row or one column.'};
+  if(committedCount===0 && !pending.has(`${CENTER},${CENTER}`))return {ok:false,error:'The first move must cover the center square.'};
+  if(committedCount>0){
+    let touches=false;
+    for(const p of ps){for(const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1]]){const rr=p.r+dr,cc=p.c+dc;if(rr>=0&&rr<N&&cc>=0&&cc<N&&board[rr][cc]!==null)touches=true;}}
+    if(!touches)return {ok:false,error:'The move must connect to the existing board.'};
+  }
+  if(ps.length>1){
+    if(sameR){const r=ps[0].r, min=Math.min(...ps.map(p=>p.c)), max=Math.max(...ps.map(p=>p.c)); for(let c=min;c<=max;c++)if(!occupied(r,c))return {ok:false,error:'The main horizontal number has a gap.'};}
+    if(sameC){const c=ps[0].c, min=Math.min(...ps.map(p=>p.r)), max=Math.max(...ps.map(p=>p.r)); for(let r=min;r<=max;r++)if(!occupied(r,c))return {ok:false,error:'The main vertical number has a gap.'};}
+  }
+  const seen=new Set(), lines=[];
+  for(const p of ps){
+    for(const [dr,dc,ori] of [[0,1,'H'],[1,0,'V']]){
+      const cells=lineThrough(p.r,p.c,dr,dc); if(cells.length<2)continue;
+      const key=ori+':'+lineKey(cells); if(seen.has(key))continue; seen.add(key);
+      const s=digitsOf(cells); if(s[0]==='0')return {ok:false,error:`${s} has a leading zero.`};
+      const n=BigInt(s); const prime=isPrime64(n); lines.push({cells,s,n,prime,ori});
+      if(!prime)return {ok:false,error:`${s} is composite.`,lines};
+    }
+  }
+  if(lines.length===0)return {ok:false,error:'A move must create at least one number of two or more digits.'};
+  return {ok:true,lines};
+}
+
+function modPow(a,d,n){let r=1n;a%=n;while(d>0n){if(d&1n)r=r*a%n;a=a*a%n;d>>=1n;}return r;}
+function isPrime64(n){
+  if(n<2n)return false;
+  const small=[2n,3n,5n,7n,11n,13n,17n,19n,23n,29n,31n,37n];
+  for(const p of small){if(n===p)return true;if(n%p===0n)return false;}
+  let d=n-1n,s=0;while((d&1n)===0n){d>>=1n;s++;}
+  const bases=[2n,325n,9375n,28178n,450775n,9780504n,1795265022n];
+  for(let a of bases){a%=n;if(a===0n)continue;let x=modPow(a,d,n);if(x===1n||x===n-1n)continue;let witness=true;for(let r=1;r<s;r++){x=x*x%n;if(x===n-1n){witness=false;break;}}if(witness)return false;}
+  return true;
+}
+
+function scoreLine(line){
+  let subtotal=0, wordMult=1;
+  for(const [r,c] of line.cells){
+    const d=combinedDigit(r,c); let pts=tilePoints[d];
+    if(pending.has(`${r},${c}`)){
+      const pr=premium.get(`${r},${c}`); if(pr==='DL')pts*=2; else if(pr==='TL')pts*=3; else if(pr==='DP')wordMult*=2; else if(pr==='TP')wordMult*=3;
+    }
+    subtotal+=pts;
+  }
+  return subtotal*wordMult;
+}
+function playMove(){
+  const v=validateMove(); if(!v.ok){setMessage(v.error,'bad');updateMoveInfo(v);return;}
+  let gained=v.lines.reduce((s,l)=>s+scoreLine(l),0); if(pending.size===7)gained+=50;
+  for(const p of pending.values()){board[p.r][p.c]=p.digit; committedCount++;}
+  for(const l of v.lines) if(bestPrime===null||l.n>bestPrime) bestPrime=l.n;
+  score+=gained; pending.clear(); refillRack(); render(); setMessage(`Valid move: +${gained} points. ${v.lines.map(x=>x.s).join(', ')}`,'good');
+}
+function returnPending(){for(const p of pending.values())rack[p.rackIndex]=p.digit;pending.clear();selectedRack=null;render();setMessage('Pending tiles returned to the rack.','');}
+function exchangeRack(){
+  if(pending.size){setMessage('Return pending tiles before exchanging.','bad');return;}
+  const existing=rack.filter(x=>x!==null); if(bag.length<existing.length){setMessage('Not enough digits remain in the bag to exchange the rack.','bad');return;}
+  rack=Array(7).fill(null); refillRack(); score=Math.max(0,score-10); render(); setMessage('Rack exchanged for a 10-point penalty.','');
+}
+function setMessage(msg,kind){const m=el('message');m.textContent=msg;m.className=kind||'';}
+function updateMoveInfo(v=null){
+  const box=el('moveInfo'); if(pending.size===0){box.textContent='No pending tiles.';return;}
+  v=v||validateMove();
+  if(!v.lines||!v.lines.length){box.innerHTML=`<span style="color:${v.ok?'var(--good)':'var(--bad)'}">${escapeHtml(v.ok?'Valid so far.':v.error)}</span>`;return;}
+  let html=`<div style="color:${v.ok?'var(--good)':'var(--bad)'}">${escapeHtml(v.ok?'All created numbers are prime.':v.error)}</div><ul class="move-list">`;
+  for(const l of v.lines)html+=`<li>${l.ori}: <strong>${l.s}</strong> — ${l.prime?'prime':'composite'}</li>`; html+='</ul>'; box.innerHTML=html;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+
+el('playBtn').addEventListener('click',playMove); el('undoBtn').addEventListener('click',returnPending); el('exchangeBtn').addEventListener('click',exchangeRack);
+el('dailyBtn').addEventListener('click',()=>start(todaySeed())); el('randomBtn').addEventListener('click',()=>start('random-'+Date.now().toString(36)+'-'+Math.floor(Math.random()*1e9).toString(36)));
+start(todaySeed());
+})();
+
+</script>
+<script>
+  const aboutButton = document.getElementById('aboutBtn');
+  const aboutPanel = document.getElementById('primebbleAbout');
+
+  aboutButton.addEventListener('click', () =>
+  {
+    const isExpanded = aboutButton.getAttribute('aria-expanded') === 'true';
+
+    aboutButton.setAttribute('aria-expanded', String(!isExpanded));
+    aboutPanel.hidden = isExpanded;
+  });
+</script>
+</body>
+</html>
