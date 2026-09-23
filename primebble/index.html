@@ -418,7 +418,7 @@ function returnPending(){for(const p of pending.values())rack[p.rackIndex]=p.dig
 function exchangeRack(){
   if(pending.size){setMessage('Return pending tiles before exchanging.','bad');return;}
   const existing=rack.filter(x=>x!==null); if(bag.length<existing.length){setMessage('Not enough digits remain in the bag to exchange the rack.','bad');return;}
-  rack=Array(7).fill(null); refillRack(); score=Math.max(0,score-10); render(); setMessage('Rack exchanged for a 10-point penalty.','');
+  rack=Array(7).fill(null); refillRack(); score -= 10; render(); setMessage('Rack exchanged for a 10-point penalty.','');
 }
 function setMessage(msg,kind){const m=el('message');m.textContent=msg;m.className=kind||'';}
 function updateMoveInfo(v=null){
