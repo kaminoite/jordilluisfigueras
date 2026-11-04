@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generador de fitxes de lectura · ARASAAC + Betània Patmos · Versió 3</title>
+<meta name="description" content="Genera sis fitxes de lectura en català amb pictogrames d'ARASAAC i lletra Betània Patmos, per imprimir en A4.">
+<link id="site-stylesheet" href="../../style.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Betania+Patmos:wght@400&display=swap" rel="stylesheet">
+<style>
+@page { size: A4 portrait; margin: 10mm; }
+* { box-sizing: border-box; }
+:root { color-scheme: light; }
+body { margin: 0; color: #191919; background: #cacaca; font-family: "Trebuchet MS", Verdana, sans-serif; }
+.editor { width: min(100% - 24px, 920px); margin: 0 auto 15px; padding: 24px 0 20px; background: white; border-bottom: 1px solid #d7dade; }
+h1 { color: #a40008; font-size: 24px; letter-spacing: -.35px; margin: 0 0 7px; }
+a { color: #a40008; }
+.intro { color: #4b5563; font-size: 14px; line-height: 1.55; max-width: 72ch; margin: 0 0 18px; }
+.column-labels { display: grid; grid-template-columns: 32px 1fr 1fr; gap: 8px 10px; align-items: end; font-weight: bold; font-size: 13px; color: #4b5563; margin-bottom: 7px; }
+.alt-head { display: flex; gap: 7px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.alt-head label { flex: 1 1 auto; }
+#alt-language { font: inherit; font-size: 13px; font-weight: normal; color: #111827; background: white; border: 1px solid #bdc5ce; border-radius: 4px; padding: 7px 22px 7px 8px; max-width: 100%; }
+#alt-language:focus { outline: 2px solid #a40008; outline-offset: 1px; }
+@media screen and (max-width: 580px) { .column-labels, .word-row { grid-template-columns: 23px minmax(0,1fr) minmax(0,1fr) !important; column-gap: 5px; } .alt-head { gap: 3px; } #alt-language { padding: 7px 3px; } .word-row input { padding: 10px 6px; } }
+.word-row { display: grid; grid-template-columns: 32px 1fr 1fr; gap: 8px 10px; align-items: center; margin-bottom: 9px; }
+.word-row .number { color: #6b7280; font-size: 14px; text-align: center; }
+.word-row input { padding: 10px 11px; border: 1px solid #bdc5ce; border-radius: 4px; background: white; color: #111827; font: inherit; font-size: 16px; min-width: 0; }
+.word-row input:focus { outline: 2px solid #a40008; outline-offset: 1px; }
+.actions { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; margin-top: 17px; }
+button, .import-label { display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 10px 13px; font-family: inherit; font-size: 14px; line-height: 1.25; border-radius: 4px; cursor: pointer; background: white; border: 1px solid #b8c1cc; color: #1e293b; font-weight: 600; text-decoration: none; }
+button:hover:not(:disabled), .import-label:hover { background: #f5f7fa; }
+button.primary { background: #a40008; border-color: #a40008; color: white; }
+button.primary:hover:not(:disabled) { background: #7d0006; }
+button:focus-visible, a:focus-visible, select:focus-visible, .import-label:focus-within { outline: 2px solid #a40008; outline-offset: 3px; }
+.import-label { position: relative; }
+button:disabled { opacity: .44; cursor: not-allowed; }
+#import-file { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+#app-status { font-size: 13px; line-height: 1.5; color: #475569; margin: 13px 0 0; min-height: 19px; }
+#app-status.error { color: #b91c1c; }
+.hint { margin-top: 11px; padding: 10px 12px; background: #f8fafc; border-radius: 6px; font-size: 12px; line-height: 1.55; color: #475569; }
+.hint a, .foot a { color: inherit; }
+.preview-heading { width: min(100% - 24px, 920px); margin: 17px auto 7px; font-size: 14px; color: #475569; }
+.page-scroller { overflow-x: auto; width: 100%; }
+.page { width: 210mm; height: 297mm; background: white; margin: 10px auto 28px; padding: 10mm; box-shadow: 0 3px 15px #0002; display: flex; flex-direction: column; font-family: Arial, Helvetica, sans-serif; }
+.grid { height: 265mm; display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 3mm; }
+.card { border: 1.2px dashed #666; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 3mm 2mm 2mm; overflow: hidden; min-width: 0; }
+.picture { height: 43mm; width: 67mm; max-width: 100%; display: flex; align-items: center; justify-content: center; }
+.picture img { height: 100%; width: 100%; object-fit: contain; }
+.fallback { font-size: 12px; line-height: 1.4; padding: 10px; color: #757575; }
+.upper { font-weight: 700; font-size: 23pt; line-height: 1.1; margin-top: 1mm; letter-spacing: 1px; white-space: nowrap; }
+.lower { font: 22pt/1.2 Arial, Helvetica, sans-serif; margin-top: 1.2mm; white-space: nowrap; }
+.cursive { font-family: 'Betania Patmos', cursive; font-weight: 400; font-style: normal; font-size: 27pt; line-height: 1.25; margin-top: .5mm; font-feature-settings: 'calt' 1; font-variant-ligatures: contextual; white-space: nowrap; }
+.chooser { width: 100%; max-width: 75mm; margin: 4px auto 0; padding: 0 2mm; font-size: 10px; color: #555; }
+.chooser-controls { display: flex; gap: 3px; align-items: center; }
+.chooser select { width: 100%; min-width: 0; font-size: 11px; padding: 3px 1px; border: 1px solid #ddd; border-radius: 4px; background: white; }
+.chooser button { padding: 3px 6px; min-width: 23px; font: bold 13px Arial; border-radius: 4px; }
+.chooser-feedback { font-size: 10px; margin-top: 3px; color: #666; min-height: 10px; }
+.foot { height: 12mm; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 7pt; color: #444; padding: 1mm; }
+@media screen and (max-width: 780px) {
+  .editor { padding: 18px 14px; }
+  .page { transform-origin: top left; }
+  .page-scroller { overflow-x: auto; width: 100%; }
+}
+@media print {
+  html, body { margin: 0 !important; padding: 0 !important; background: white !important; }
+  .editor, .preview-heading, .chooser { display: none !important; }
+  .page-scroller { overflow: visible !important; }
+  .page { margin: 0 !important; padding: 0 !important; box-shadow: none !important; width: 190mm !important; height: 277mm !important; }
+  .grid { height: 265mm !important; }
+  .foot { height: 12mm !important; }
+  .card { break-inside: avoid; }
+}
+</style>
+<style id="site-frame-styles">
+body { margin: 8px; background: #cacaca url('../../images/background.png') repeat-x; }
+#container { width: 96%; max-width: 1100px; }
+#main_content { padding: 0 24px 20px; }
+.back-link { width: min(100% - 24px, 920px); margin: 0 auto; padding-top: 8px; font-size: 13px; }
+@media screen and (max-width: 580px) {
+  #container { width: 100%; }
+  #header { font-size: 24px; }
+  #sub_header { font-size: 16px; padding: 10px 0 20px; }
+  #main_content { padding: 0 0 12px; }
+}
+@media print {
+  .site-only { display: none !important; }
+  #container, #main_content, #generator-app { width: auto !important; max-width: none !important; margin: 0 !important; padding: 0 !important; background: white !important; }
+}
+</style>
+</head>
+<body>
+<div id="container">
+<div id="header" class="site-only">Jordi-Lluís Figueras personal website</div>
+<div id="sub_header" class="site-only">En el reino de los ciegos el tuerto es el rey.</div>
+<div id="main_content_top" class="site-only"></div>
+<div id="main_content">
+<nav class="back-link site-only" aria-label="Navegació"><a href="../../index.html">← Pàgina principal</a></nav>
+<main id="generator-app">
+<section class="editor" aria-label="Generador de fitxes">
+  <h1>Generador de fitxes de lectura</h1>
+  <p class="intro">Escriu les sis paraules que vols imprimir. El programa cercarà els dibuixos <strong>primer en català</strong> a ARASAAC. Si vols ampliar els resultats, pots afegir una paraula alternativa i triar-ne l'idioma. <strong>La segona columna és opcional</strong> i no apareix a les fitxes.</p>
+  <form id="words-form">
+    <div class="column-labels"><span></span><span>Paraula a aparèixer a la fitxa</span>
+      <div class="alt-head"><label for="alt-language">Cerca alternativa (opcional)</label>
+        <select id="alt-language" aria-label="Idioma de la cerca alternativa">
+          <option value="en">Anglès</option><option value="es">Castellà</option>
+          <option value="fr">Francès</option><option value="it">Italià</option>
+          <option value="de">Alemany</option><option value="pt">Portuguès</option>
+          <option value="ca">Català</option><option value="eu">Basc</option>
+          <option value="gl">Gallec</option><option value="sv">Suec</option>
+        </select>
+      </div>
+    </div>
+    <div id="word-inputs"></div>
+    <div class="actions">
+      <button class="primary" type="submit" id="generate-btn">Genera les 6 fitxes</button>
+      <button type="button" id="random-btn" title="Tria sis paraules senzilles diferents">Exemple a l'atzar</button>
+      <button type="button" id="clear-btn" title="Buida les sis files i la previsualització">Neteja tots els camps</button>
+      <button type="button" id="print-btn" disabled>Imprimeix / Desa com a PDF</button>
+      <button type="button" id="download-btn" disabled>Descarrega l'HTML</button>
+      <label class="import-label" for="import-file">Carrega una fitxa anterior
+        <input id="import-file" type="file" accept=".html,text/html">
+      </label>
+    </div>
+  </form>
+  <p id="app-status" role="status" aria-live="polite">A punt.</p>
+  <div class="hint"><strong>Com s'utilitza:</strong> 1. Escriu les sis paraules (la cerca alternativa és opcional). 2. Selecciona l'idioma de la segona columna si l'utilitzes. 3. Prem «Genera les 6 fitxes». 4. Tria el dibuix que prefereixis. 5. Imprimeix o descarrega l'HTML. Pots generar sis paraules senzilles amb «Exemple a l'atzar» o buidar el formulari amb «Neteja tots els camps». També pots importar fitxes fetes amb versions anteriors. <strong>Cal Internet</strong> per cercar dibuixos i carregar Betània Patmos. Els pictogrames es mostren en blanc i negre.</div>
+</section>
+<p class="preview-heading">Previsualització de la pàgina A4 (els selectors de dibuixos no s'imprimeixen)</p>
+<div class="page-scroller"><div class="page" id="a4-page">
+  <div class="grid" id="preview-grid"></div>
+  <div class="foot">Pictogrames: Sergio Palao · Procedència: ARASAAC (arasaac.org) · Titular: Govern d'Aragó · Llicència CC BY-NC-SA 4.0 · Ús no comercial.</div>
+</div></div>
+</main>
+</div>
+<div id="main_content_bottom" class="site-only"></div>
+<div id="footer" class="site-only">Jordi-Lluís Figueras</div>
+</div>
+<!-- Aquest bloc es reescriu en descarregar l'HTML per conservar les paraules i les imatges triades. -->
+<script id="saved-state" type="application/json">null</script>
+<script>
+'use strict';
+const LANG_NAMES = {en:'anglès', es:'castellà', fr:'francès', it:'italià', de:'alemany', pt:'portuguès', ca:'català', eu:'basc', gl:'gallec', sv:'suec'};
+const SAMPLES = [
+  {ca:'amiga', alt:'friend'}, {ca:'vestit', alt:'dress'},
+  {ca:'dansa', alt:'dance'}, {ca:'música', alt:'music'},
+  {ca:'poble', alt:'village'}, {ca:'cavall', alt:'horse'}
+];
+// Paraules curtes i concretes, agrupades per fer exemples variats.
+// Cada exemple en tria una per grup, sense repeticions. Es cerquen en català.
+const EASY_WORD_GROUPS = [
+  ['gat', 'gos', 'vaca', 'rata', 'peix', 'ànec', 'conill'],
+  ['pa', 'poma', 'pera', 'mel', 'ou', 'sopa', 'llet', 'galeta'],
+  ['casa', 'porta', 'taula', 'llit', 'plat', 'got', 'tassa', 'cadira'],
+  ['sol', 'mar', 'flor', 'rosa', 'arbre', 'neu', 'lluna', 'fulla'],
+  ['mà', 'peu', 'nas', 'ull', 'dit', 'boca', 'cama', 'braç'],
+  ['bola', 'pilota', 'tren', 'nina', 'bota', 'llapis', 'cotxe', 'barret']
+];
+const byId = id => document.getElementById(id);
+const form = byId('words-form');
+const inputs = byId('word-inputs');
+const grid = byId('preview-grid');
+const statusEl = byId('app-status');
+const generateBtn = byId('generate-btn');
+const printBtn = byId('print-btn');
+const downloadBtn = byId('download-btn');
+let current = [];
+let currentAltLang = 'en';
+let imagesLoaded = new Set();
+let running = false;
+let generation = 0;
+let abortController = null;
+let fontReady = false;
+let searchErrors = 0;
+let dirty = false;
+
+function safeState(x) {
+  if (!x || !Array.isArray(x.entries) || x.entries.length !== 6) return null;
+  // Compatibilitat amb fitxes antigues: {ca, en, id} passa a {ca, alt, id}.
+  const entries = x.entries.map(e => ({
+    ca: String(e.ca || '').trim().slice(0, 32),
+    alt: String(e.alt ?? e.en ?? '').trim().slice(0, 64),
+    id: /^\d{2,9}$/.test(String(e.id || '')) ? String(e.id) : null
+  }));
+  if (entries.some(e => !e.ca)) return null;
+  const altLang = Object.hasOwn(LANG_NAMES, x.altLang) ? x.altLang : 'en';
+  return {version: 2, altLang, entries};
+}
+function readEmbeddedState() {
+  try { return safeState(JSON.parse(byId('saved-state').textContent)); }
+  catch { return null; }
+}
+function createInputs() {
+  inputs.replaceChildren();
+  for (let i = 0; i < 6; i++) {
+    const row = document.createElement('div'); row.className = 'word-row';
+    const number = document.createElement('span');
+    number.className = 'number'; number.textContent = i + 1;
+    const ca = document.createElement('input');
+    ca.type = 'text'; ca.lang = 'ca'; ca.spellcheck = false;
+    ca.id = `ca-${i}`; ca.maxLength = 32;
+    ca.setAttribute('aria-label', `Paraula ${i+1} a aparèixer a la fitxa`);
+    ca.autocomplete = 'off'; ca.required = true;
+    const alt = document.createElement('input');
+    alt.type = 'text'; alt.spellcheck = false;
+    alt.id = `alt-${i}`; alt.maxLength = 64;
+    alt.setAttribute('aria-label', `Cerca alternativa opcional de la paraula ${i+1}`);
+    alt.autocomplete = 'off'; alt.placeholder = '(opcional)';
+    row.append(number, ca, alt); inputs.appendChild(row);
+  }
+}
+function setInputs(entries) {
+  entries.forEach((e,i) => {
+    byId(`ca-${i}`).value = e.ca;
+    byId(`alt-${i}`).value = e.alt || '';
+  });
+}
+function getInputs() {
+  return Array.from({length:6}, (_,i) => ({
+    ca: byId(`ca-${i}`).value.trim(),
+    alt: byId(`alt-${i}`).value.trim(), id: null
+  }));
+}
+function clearAll() {
+  // Invalida tant les peticions pendents com els esdeveniments de càrrega d'imatges.
+  ++generation;
+  if (abortController) abortController.abort();
+  abortController = null;
+  current = [];
+  currentAltLang = 'en';
+  imagesLoaded = new Set();
+  running = false;
+  searchErrors = 0;
+  dirty = false;
+  grid.replaceChildren();
+  setInputs(Array.from({length:6}, () => ({ca:'',alt:''})));
+  byId('alt-language').value = 'en';
+  for (let i=0; i<6; i++) byId(`alt-${i}`).lang = 'en';
+  checkReady();
+  makeStatus('Tots els camps són buits. Escriu sis paraules o prem «Exemple a l’atzar».');
+  byId('ca-0').focus();
+}
+function fillRandomExample() {
+  const words = EASY_WORD_GROUPS.map(group => group[Math.floor(Math.random()*group.length)]);
+  // Barreja els sis mots, sense repetir-ne cap.
+  for (let i=words.length-1; i>0; i--) {
+    const j=Math.floor(Math.random()*(i+1));
+    [words[i],words[j]]=[words[j],words[i]];
+  }
+  setInputs(words.map(ca => ({ca,alt:''})));
+  // L'exemple només necessita el català; no modifica l'idioma seleccionat.
+  generate();
+}
+function imgUrl(id) {
+  return `https://static.arasaac.org/pictograms/${id}/${id}_nocolor_500.png`;
+}
+function dynamicImgUrl(id) {
+  return `https://api.arasaac.org/v1/pictograms/${id}?color=false&resolution=500`;
+}
+function makeStatus(message, error=false) {
+  statusEl.textContent = message;
+  statusEl.classList.toggle('error', error);
+}
+function checkReady() {
+  const allPictures = imagesLoaded.size === 6 && current.length === 6;
+  printBtn.disabled = !(allPictures && fontReady && !running && !dirty);
+  downloadBtn.disabled = !(allPictures && !running && !dirty);
+  generateBtn.disabled = running;
+  if (dirty) {
+    makeStatus('Hi ha canvis pendents. Prem «Genera les 6 fitxes» per actualitzar la pàgina.');
+  } else if (running) {
+    makeStatus(`Cercant pictogrames a ARASAAC… ${imagesLoaded.size}/6 imatges carregades.`);
+  } else if (allPictures && fontReady) {
+    makeStatus('Les 6 imatges i Betània Patmos estan preparades. Ja pots imprimir o descarregar l’HTML.');
+  } else if (allPictures) {
+    makeStatus('Les 6 imatges estan preparades. La font Betània Patmos encara no s’ha carregat.');
+  } else if (current.length) {
+    makeStatus(`${imagesLoaded.size}/6 imatges carregades. Revisa els avisos de les fitxes que falten.`, searchErrors > 0);
+  }
+}
+function createCard(entry, i) {
+  const card = document.createElement('section');
+  card.className = 'card';
+  const pic = document.createElement('div'); pic.className = 'picture';
+  const pending = document.createElement('span'); pending.className = 'fallback';
+  pending.textContent = 'Cercant dibuix…'; pic.append(pending);
+  const upper = document.createElement('div'); upper.className = 'upper';
+  upper.textContent = entry.ca.toLocaleUpperCase('ca');
+  const lower = document.createElement('div'); lower.className = 'lower';
+  lower.textContent = entry.ca;
+  const cursive = document.createElement('div'); cursive.className = 'cursive';
+  cursive.textContent = entry.ca;
+  // Una reducció discreta per a paraules especialment llargues.
+  if (entry.ca.length >= 13) {upper.style.fontSize='18pt';lower.style.fontSize='18pt';cursive.style.fontSize='21pt';}
+  else if (entry.ca.length >= 10) {upper.style.fontSize='20pt';lower.style.fontSize='20pt';cursive.style.fontSize='24pt';}
+  const chooser = document.createElement('div'); chooser.className = 'chooser';
+  const controls = document.createElement('div'); controls.className = 'chooser-controls';
+  const prev = document.createElement('button'); prev.type = 'button'; prev.textContent = '‹'; prev.title = 'Dibuix anterior';
+  const select = document.createElement('select'); select.setAttribute('aria-label', `Tria un dibuix per a ${entry.ca}`);
+  const next = document.createElement('button'); next.type = 'button'; next.textContent = '›'; next.title = 'Dibuix següent';
+  prev.disabled = true; next.disabled = true; select.disabled = true;
+  const feedback = document.createElement('div'); feedback.className='chooser-feedback'; feedback.textContent = 'Cercant en català' + (entry.alt ? ` i en ${LANG_NAMES[currentAltLang]}` : '') + '…';
+  controls.append(prev,select,next); chooser.append(controls,feedback);
+  card.append(pic,upper,lower,cursive,chooser); grid.append(card);
+  return {card,pic,select,prev,next,feedback,imageNumber:0};
+}
+function setImage(entry, ui, i, id, gen) {
+  if (gen !== generation || !id) return;
+  const token = ++ui.imageNumber;
+  entry.id = String(id);
+  imagesLoaded.delete(i);
+  ui.pic.replaceChildren();
+  const img = document.createElement('img');
+  img.alt = `Pictograma d'ARASAAC de ${entry.ca}`;
+  img.onload = () => {
+    if (gen !== generation || token !== ui.imageNumber) return;
+    imagesLoaded.add(i); checkReady();
+  };
+  img.onerror = () => {
+    if (gen !== generation || token !== ui.imageNumber) return;
+    if (!img.dataset.alternative) {
+      img.dataset.alternative = '1';
+      img.src = dynamicImgUrl(id);
+    } else {
+      ui.pic.replaceChildren();
+      const warning=document.createElement('span');warning.className='fallback';
+      warning.textContent='No s’ha pogut carregar. Tria un altre dibuix.';
+      ui.pic.append(warning); imagesLoaded.delete(i); checkReady();
+    }
+  };
+  img.src = imgUrl(id);
+  ui.pic.append(img);
+  checkReady();
+}
+function selectResult(ui, entry, i, gen, id) {
+  const v = String(id);
+  if (Array.from(ui.select.options).some(op => op.value === v)) ui.select.value = v;
+  setImage(entry, ui, i, v, gen);
+}
+function wireChooser(ui, entry, i, gen) {
+  ui.select.addEventListener('change', () => selectResult(ui, entry, i, gen, ui.select.value));
+  ui.prev.addEventListener('click', () => {
+    if (ui.select.selectedIndex > 0) {
+      ui.select.selectedIndex--; selectResult(ui, entry, i, gen, ui.select.value);
+    }
+  });
+  ui.next.addEventListener('click', () => {
+    if (ui.select.selectedIndex < ui.select.options.length-1) {
+      ui.select.selectedIndex++; selectResult(ui, entry, i, gen, ui.select.value);
+    }
+  });
+  ui.select.addEventListener('change', updateArrows);
+  ui.prev.addEventListener('click', updateArrows);
+  ui.next.addEventListener('click', updateArrows);
+  function updateArrows() {
+    ui.prev.disabled = ui.select.disabled || ui.select.selectedIndex <= 0;
+    ui.next.disabled = ui.select.disabled || ui.select.selectedIndex >= ui.select.options.length-1;
+  }
+  ui.updateArrows = updateArrows;
+}
+function pictogramDescription(p, term) {
+  const matches = (p.keywords || []).map(k => k.keyword || k.word || '').filter(Boolean);
+  return matches.slice(0, 2).join(', ') || term;
+}
+function rankPictogram(p, term, lang) {
+  const words = (p.keywords || []).map(k => String(k.keyword || k.word || '').toLocaleLowerCase(lang));
+  const query = term.toLocaleLowerCase(lang);
+  if (words.includes(query)) return 0;
+  if (words.some(w => w.startsWith(query+' '))) return 1;
+  return 2;
+}
+async function fetchSearch(lang, term, signal) {
+  const timeoutSignal = AbortSignal.timeout ? AbortSignal.timeout(18000) : null;
+  const fetchSignal = timeoutSignal && AbortSignal.any ? AbortSignal.any([signal,timeoutSignal]) : signal;
+  const url = `https://api.arasaac.org/v1/pictograms/${lang}/search/${encodeURIComponent(term)}`;
+  const response = await fetch(url, {signal: fetchSignal});
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const json = await response.json();
+  if (!Array.isArray(json)) throw new Error('Resposta inesperada');
+  return json.filter(p => /^\d+$/.test(String(p._id || '')))
+    .sort((a,b) => rankPictogram(a,term,lang) - rankPictogram(b,term,lang))
+    .slice(0, 24);
+}
+async function searchOne(entry, ui, i, gen, signal) {
+  wireChooser(ui,entry,i,gen);
+  if (entry.id) {
+    // Conserva el pictograma triat quan es recupera una fitxa desada.
+    const option = document.createElement('option');
+    option.value = entry.id; option.textContent = `Dibuix desat (${entry.id})`;
+    ui.select.append(option); ui.select.disabled = false; ui.updateArrows();
+    setImage(entry,ui,i,entry.id,gen);
+  }
+  const queries = [{lang:'ca',term:entry.ca}];
+  if (entry.alt && !(currentAltLang === 'ca' && entry.ca.toLocaleLowerCase('ca') === entry.alt.toLocaleLowerCase('ca'))) {
+    queries.push({lang:currentAltLang,term:entry.alt});
+  }
+  try {
+    // Fer les dues cerques separadament evita que una fallada tapi els resultats de l'altra.
+    const responses = await Promise.allSettled(queries.map(q => fetchSearch(q.lang,q.term,signal)));
+    if (gen !== generation) return;
+    const unique = new Map();
+    const info = [];
+    const failures = [];
+    responses.forEach((r, n) => {
+      const q = queries[n];
+      if (r.status !== 'fulfilled') {
+        failures.push(`${LANG_NAMES[q.lang]} (${q.term})`);
+        return;
+      }
+      info.push(`${r.value.length} en ${LANG_NAMES[q.lang]}`);
+      r.value.forEach(p => {
+        const id = String(p._id);
+        if (!unique.has(id)) unique.set(id, {
+          id,
+          label: `${q.lang.toUpperCase()} · ${pictogramDescription(p, q.term)}`
+        });
+      });
+    });
+    const previous = entry.id;
+    if (previous && !unique.has(previous)) {
+      unique.set(previous,{id:previous,label:`Dibuix desat (${previous})`});
+    }
+    ui.select.replaceChildren();
+    // Els resultats de català són sempre els primers; l'alternativa amplia la selecció.
+    for (const [id, pic] of unique) {
+      const opt = document.createElement('option');
+      opt.value = id; opt.textContent = pic.label;
+      ui.select.append(opt);
+    }
+    ui.select.disabled = unique.size === 0;
+    ui.select.value = previous && unique.has(previous) ? previous : (ui.select.options[0]?.value || '');
+    ui.updateArrows();
+    const suffix = failures.length ? ` · No s'ha pogut consultar: ${failures.join(', ')}` : '';
+    ui.feedback.textContent = (info.length ? `Resultats: ${info.join(' + ')}` : 'Cerca no disponible') + suffix;
+    if (!previous && ui.select.value) setImage(entry,ui,i,ui.select.value,gen);
+    if (failures.length) searchErrors++;
+    if (!unique.size) {
+      ui.pic.replaceChildren();
+      const warning = document.createElement('span'); warning.className='fallback';
+      warning.textContent = 'Sense dibuixos. Prova una paraula alternativa i torna a generar.';
+      ui.pic.append(warning);
+    }
+  } catch (err) {
+    if (gen !== generation || err.name === 'AbortError') return;
+    searchErrors++;
+    ui.feedback.textContent = 'Error de cerca. Revisa la connexió a Internet.';
+  } finally { if (gen === generation) checkReady(); }
+}
+async function generate(seed=null) {
+  const entries = seed ? seed.entries.map(e => ({...e})) : getInputs();
+  if (entries.length !== 6 || entries.some(e => !e.ca)) {
+    makeStatus('Cal completar les sis paraules que apareixeran a les fitxes. La segona columna és opcional.', true);
+    return;
+  }
+  if (abortController) abortController.abort();
+  abortController = new AbortController();
+  const gen = ++generation;
+  const newLang = seed ? seed.altLang : byId('alt-language').value;
+  const oldLang = currentAltLang;
+  currentAltLang = newLang;
+  const existing = current;
+  current = entries.map((e,i) => {
+    const old = existing[i];
+    return {...e, id: e.id || (old && old.ca === e.ca && old.alt === e.alt && oldLang === newLang ? old.id : null)};
+  });
+  grid.replaceChildren();
+  imagesLoaded = new Set(); searchErrors = 0; running = true; dirty = false;
+  checkReady();
+  const jobs = current.map((entry,i) => {
+    const ui = createCard(entry,i);
+    return searchOne(entry,ui,i,gen,abortController.signal);
+  });
+  await Promise.allSettled(jobs);
+  if (gen === generation) {running=false;checkReady();}
+}
+function exportHTML() {
+  if (current.length !== 6 || imagesLoaded.size !== 6) return;
+  const cleanState = safeState({altLang: currentAltLang, entries:current});
+  if (!cleanState) {makeStatus('No s’ha pogut preparar el fitxer.',true);return;}
+  const cloned = document.documentElement.cloneNode(true);
+  // Les fitxes descarregades no depenen dels fitxers ni del marc del web.
+  cloned.querySelectorAll('#site-stylesheet, #site-frame-styles, .site-only').forEach(el => el.remove());
+  for (const id of ['generator-app', 'main_content', 'container']) {
+    const wrapper = cloned.querySelector(`#${id}`);
+    if (wrapper) wrapper.replaceWith(...wrapper.childNodes);
+  }
+  cloned.querySelector('#preview-grid').replaceChildren();
+  cloned.querySelector('#word-inputs').replaceChildren();
+  const saved = cloned.querySelector('#saved-state');
+  // Evita que un text introduït per l'usuari tanqui el bloc JSON del document.
+  saved.textContent = JSON.stringify(cleanState).replace(/</g,'\\u003c');
+  cloned.querySelector('#app-status').textContent='Obrint la fitxa desada…';
+  cloned.querySelector('#print-btn').disabled=true;
+  cloned.querySelector('#download-btn').disabled=true;
+  const html = '<!doctype html>\n' + cloned.outerHTML;
+  const blob = new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  const slug = current.slice(0,2).map(e=>e.ca.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('ca').replace(/[^a-z0-9]+/g,'-')).join('_');
+  a.download=`fitxes_${slug || 'lectura'}.html`;
+  document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),30000);
+}
+async function importHTML(file) {
+  if (!file) return;
+  try {
+    const html=await file.text();
+    const parsed=new DOMParser().parseFromString(html,'text/html');
+    const stored=parsed.querySelector('#saved-state');
+    const data=stored && safeState(JSON.parse(stored.textContent));
+    if (!data) throw new Error('No és una fitxa guardada per aquest generador.');
+    setInputs(data.entries);
+    byId('alt-language').value = data.altLang;
+    for (let i=0; i<6; i++) byId(`alt-${i}`).lang = data.altLang;
+    await generate(data);
+  } catch(err) {makeStatus('No s’ha pogut carregar la fitxa: '+err.message,true);}
+  finally {byId('import-file').value='';}
+}
+function init() {
+  createInputs();
+  const embedded=readEmbeddedState();
+  setInputs(embedded ? embedded.entries : SAMPLES);
+  byId('alt-language').value = embedded?.altLang || 'en';
+  for (let i=0; i<6; i++) byId(`alt-${i}`).lang = byId('alt-language').value;
+  form.addEventListener('submit',event=>{event.preventDefault();generate();});
+  byId('clear-btn').addEventListener('click',clearAll);
+  byId('random-btn').addEventListener('click',fillRandomExample);
+  inputs.addEventListener('input',()=>{dirty=true;checkReady();});
+  byId('alt-language').addEventListener('change',()=>{
+    for (let i=0; i<6; i++) byId(`alt-${i}`).lang = byId('alt-language').value;
+    dirty = true; checkReady();
+  });
+  printBtn.addEventListener('click',()=>{if (!printBtn.disabled) window.print();});
+  downloadBtn.addEventListener('click',exportHTML);
+  byId('import-file').addEventListener('change',event=>importHTML(event.target.files[0]));
+  // S'obre directament amb una prova. Després es poden editar les paraules.
+  generate(embedded);
+  document.fonts.load('36px "Betania Patmos"','música cavall àèéï·ç').then(fonts=>{
+    fontReady=fonts.length>0;
+    checkReady();
+  }).catch(()=>{fontReady=false;checkReady();});
+  setTimeout(()=>{
+    if (!fontReady) {
+      makeStatus('No s’ha carregat la font Betània Patmos. Comprova que tens Internet i torna a obrir el fitxer.',true);
+    }
+  },16000);
+}
+init();
+</script>
+</body>
+</html>
