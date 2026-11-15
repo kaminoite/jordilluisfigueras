@@ -3,26 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Calendari Estalmat: 24 reptes matemàtics d’advent per a l’alumnat d’Estalmat Catalunya i per a qui hi vulgui participar en el futur.">
+  <meta name="description" content="Calendari Estalmat 2026: 24 reptes matemàtics d’advent per a l’alumnat d’Estalmat Catalunya i per a qui hi vulgui participar en el futur.">
   <meta name="theme-color" content="#2a8cce">
-  <title>Calendari Estalmat · 24 reptes d’advent</title>
+  <title>Calendari Estalmat 2026 · 24 reptes d’advent</title>
   <link rel="stylesheet" href="css/estils.css">
   <!-- Scripts clàssics: el projecte també funciona obrint index.html directament. -->
   <script defer src="data/problemes.js"></script>
   <script defer src="js/diagrames.js"></script>
   <script defer src="js/acces.js"></script>
   <script defer src="js/progres.js"></script>
+  <script defer src="js/portada.js"></script>
   <script defer src="js/calendari.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#calendari">Ves al calendari</a>
+  <a class="skip-link" href="#com-funciona">Ves al contingut</a>
   <header class="sitebar">
     <div class="sitebar-inner">
       <a class="brand" href="https://www.estalmat.cat/" target="_blank" rel="noopener" aria-label="Web d’Estalmat Catalunya">
         <img src="assets/estalmat.svg" width="254" height="74" alt="Estalmat Catalunya">
       </a>
       <nav aria-label="Navegació principal">
-        <a href="#calendari">El calendari</a>
+        <a id="calendar-nav" href="#teaser">Ben aviat</a>
         <a href="#com-funciona">Com funciona?</a>
         <a href="https://www.estalmat.cat/" target="_blank" rel="noopener">Coneix Estalmat <span aria-hidden="true">↗</span></a>
       </nav>
@@ -38,6 +39,7 @@
     <div class="admin-controls">
       <label for="preview-date">Data simulada</label>
       <input type="date" id="preview-date" aria-describedby="admin-status">
+      <button type="button" class="textbtn" id="preview-teaser">Mostra la portada</button>
       <button type="button" class="textbtn" id="preview-all">Obre tots els dies</button>
       <button type="button" class="textbtn" id="preview-real">Data real</button>
       <a class="textbtn" id="preview-exit" href="?">Surt del mode de proves</a>
@@ -49,12 +51,24 @@
     <div class="hero-inner">
       <div class="hero-copy">
         <p class="eyebrow">ADVENT 2026 · DE L’1 AL 24 DE DESEMBRE</p>
-        <h1 id="page-title">Calendari<br><em>Estalmat</em></h1>
-        <p class="hero-subtitle">24 dies, 24 reptes per descobrir.</p>
+        <h1 id="page-title">Calendari<br><em>Estalmat 2026</em></h1>
+        <p class="hero-subtitle" id="hero-subtitle">Aquest desembre, cada dia una descoberta.</p>
         <p class="lead">Un calendari d’advent per a l’alumnat d’Estalmat Catalunya i per a tothom a qui li agradaria participar-hi en el futur.</p>
-        <button class="start" id="start" type="button" disabled>Comença l’1 de desembre</button>
+        <section class="teaser" id="teaser" aria-labelledby="teaser-title">
+          <h2 id="teaser-title">La primera finestreta encara és un secret.</h2>
+          <p>Estem preparant 24 reptes per fer-te pensar, sorprendre’t i descobrir noves idees. T’hi apuntes?</p>
+          <div class="teaser-launch">
+            <div class="countdown" id="countdown" role="status" hidden>
+              <strong id="countdown-days"></strong>
+              <span id="countdown-label">dies per començar</span>
+            </div>
+            <p class="launch-date">Obrim la primera finestreta<br><time datetime="2026-12-01">l’1 de desembre de 2026</time>.</p>
+          </div>
+          <a class="teaser-link" href="#com-funciona">Descobreix què t’espera <span aria-hidden="true">↓</span></a>
+        </section>
+        <button class="start" id="start" type="button" disabled hidden>Comença l’1 de desembre</button>
         <div class="hero-meta">
-          <span>Una idea cada dia</span>
+          <span>Un problema cada dia</span>
           <span>Sense calculadora</span>
         </div>
       </div>
@@ -64,13 +78,15 @@
         <span class="math-symbol symbol-pi">π</span>
         <span class="math-symbol symbol-infinity">∞</span>
         <span class="math-symbol symbol-plus">+</span>
-        <div class="advent-card"><span>DESEMBRE</span><strong>24</strong><i>finestretes a les matemàtiques</i></div>
+        <div class="advent-card"><span>DESEMBRE</span><strong id="hero-art-number">?</strong><i id="hero-art-caption">24 sorpreses per descobrir</i></div>
         <div class="art-label">Imagina. Pensa. Descobreix.</div>
       </div>
     </div>
   </section>
 
   <main class="wrap" id="calendari">
+    <!-- Ocult d’entrada: cap flaix de la graella abans de comprovar la data. -->
+    <div id="calendar-stage" hidden>
     <section class="toolbar" aria-label="El teu progrés">
       <div>
         <strong id="count" aria-live="polite">0 de 24 reptes resolts</strong>
@@ -79,7 +95,6 @@
       </div>
       <div class="tools">
         <button class="textbtn" id="reset" type="button">Reinicia el progrés</button>
-        <button class="textbtn" id="print" type="button">Imprimeix</button>
       </div>
     </section>
 
@@ -87,8 +102,19 @@
       <div><span class="overline">LES MATEMÀTIQUES T’ESPEREN</span><h2>Quin repte obres avui?</h2></div>
       <p id="availability" role="status">Cada dia s’obre un repte nou.<br>Els anteriors continuen disponibles.</p>
     </div>
-    <section class="calendar" id="calendar" aria-label="Calendari d’advent de 24 dies"></section>
-    <noscript><p>Activa el JavaScript del navegador per obrir els reptes del calendari.</p></noscript>
+    <h3 class="calendar-month" id="calendar-month">Desembre de 2026</h3>
+    <div class="weekdays" aria-label="Dies de la setmana">
+      <span><span class="weekday-long">Dilluns</span><abbr class="weekday-short" title="Dilluns">dl.</abbr></span>
+      <span><span class="weekday-long">Dimarts</span><abbr class="weekday-short" title="Dimarts">dt.</abbr></span>
+      <span><span class="weekday-long">Dimecres</span><abbr class="weekday-short" title="Dimecres">dc.</abbr></span>
+      <span><span class="weekday-long">Dijous</span><abbr class="weekday-short" title="Dijous">dj.</abbr></span>
+      <span><span class="weekday-long">Divendres</span><abbr class="weekday-short" title="Divendres">dv.</abbr></span>
+      <span><span class="weekday-long">Dissabte</span><abbr class="weekday-short" title="Dissabte">ds.</abbr></span>
+      <span><span class="weekday-long">Diumenge</span><abbr class="weekday-short" title="Diumenge">dg.</abbr></span>
+    </div>
+    <section class="calendar" id="calendar" aria-labelledby="calendar-month"></section>
+    </div>
+    <noscript><p>El calendari s’obre l’1 de desembre de 2026. Activa el JavaScript del navegador per veure el compte enrere i accedir als reptes quan arribi el dia.</p></noscript>
 
     <div class="about" id="com-funciona">
       <section>
@@ -108,13 +134,14 @@
 
   <footer class="site-footer">
     <div class="footer-inner">
-      <div class="footer-copy"><strong>Calendari Estalmat</strong><p>L’advent matemàtic d’Estalmat Catalunya.</p></div>
+      <div class="footer-copy"><strong>Calendari Estalmat 2026</strong><p>L’advent matemàtic d’Estalmat Catalunya.</p></div>
       <div class="partner-logos" aria-label="Estalmat Catalunya, FEEMCAT i Societat Catalana de Matemàtiques">
         <a href="https://www.estalmat.cat/" target="_blank" rel="noopener"><img class="footer-estalmat" src="assets/estalmat.svg" width="254" height="74" alt="Estalmat Catalunya"></a>
         <a href="https://feemcat.org/" target="_blank" rel="noopener"><img src="assets/feemcat.png" width="90" height="90" alt="FEEMCAT — Federació d’Entitats per a l’Ensenyament de les Matemàtiques de Catalunya"></a>
         <a href="https://scm.iec.cat/" target="_blank" rel="noopener"><img src="assets/scm.png" width="90" height="90" alt="SCM — Societat Catalana de Matemàtiques"></a>
       </div>
     </div>
+    <p class="author-credit">Autor: <strong>Jordi-Lluís Figueras Romero</strong></p>
   </footer>
 
   <dialog id="challenge" aria-labelledby="modal-title" aria-describedby="modal-tag">

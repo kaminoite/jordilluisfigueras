@@ -6,9 +6,24 @@ const labels = ['A', 'B', 'C', 'D', 'E'];
 let active = null;
 let chosen = null;
 
+function calendarDateLabel(day) {
+  const date = new Date(Date.UTC(AdventAccess.year, 11, day));
+  return new Intl.DateTimeFormat('ca-ES', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC'
+  }).format(date);
+}
+
+function appendCalendarBlank() {
+  const blank = document.createElement('div');
+  blank.className = 'calendar-blank';
+  blank.setAttribute('aria-hidden', 'true');
+  calendar.append(blank);
+}
+
 // Actualitza el recompte, la barra de progrés i les finestretes resoltes.
 function update() {
   const limit = AdventAccess.availableUntil();
+  updateLanding(limit);
   const correct = problems.filter(p => p.day <= limit && saved[p.day] === p.answer).length;
   document.getElementById('count').textContent = `${correct} de ${problems.length} reptes resolts`;
   document.getElementById('fill').style.width = (correct / problems.length * 100) + '%';
@@ -16,14 +31,14 @@ function update() {
     const p = problems[Number(btn.dataset.day) - 1];
     const locked = p.day > limit;
     const won = !locked && p.question && saved[p.day] === p.answer;
-    const release = `${p.day} de desembre de ${AdventAccess.year}`;
+    const release = calendarDateLabel(p.day);
     btn.disabled = locked;
     btn.classList.toggle('locked', locked);
     btn.classList.toggle('solved', Boolean(won));
     btn.setAttribute('aria-label', locked
-      ? `Dia ${p.day}: disponible el ${release}`
-      : `Dia ${p.day}: ${p.title}${won ? ', resolt' : ''}`);
-    btn.title = locked ? `S’obre el ${release}` : p.title;
+      ? `Dia ${p.day}, ${release}: encara no disponible`
+      : `Dia ${p.day}, ${release}: ${p.title}${won ? ', resolt' : ''}`);
+    btn.title = locked ? `Disponible a partir de ${release}` : `${release} · ${p.title}`;
     btn.querySelector('.door-mark').textContent = locked ? '🔒' : (won ? '✓' : '✦');
     btn.querySelector('.door-label').textContent = locked
       ? `S’OBRE EL ${String(p.day).padStart(2, '0')}/12`
@@ -60,6 +75,10 @@ function update() {
 // Crea les 24 finestretes a partir de les dades.
 function render() {
   calendar.innerHTML = '';
+  document.getElementById('calendar-month').textContent = `Desembre de ${AdventAccess.year}`;
+  // La setmana comença en dilluns: reservem les caselles prèvies al dia 1.
+  const firstWeekday = (new Date(Date.UTC(AdventAccess.year, 11, 1)).getUTCDay() + 6) % 7;
+  for (let i = 0; i < firstWeekday; i++) appendCalendarBlank();
   for (const p of problems) {
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -71,6 +90,8 @@ function render() {
     btn.addEventListener('click', () => openDay(p.day));
     calendar.append(btn);
   }
+  // Completem la darrera fila sense afegir dies ni reptes nous.
+  while (calendar.children.length % 7) appendCalendarBlank();
   update();
 }
 
@@ -85,7 +106,8 @@ function openDay(day) {
   chosen = null;
   document.getElementById('modal-tag').textContent =
     `DIA ${String(day).padStart(2, '0')} · ${active.subject}` +
-    (active.difficulty ? ' · ' + ['', 'Fàcil', 'Intermedi', 'Repte'][active.difficulty] : '');
+    (active.difficulty ? ' · ' + ['', 'Fàcil', 'Intermedi', 'Repte'][active.difficulty] : '') +
+    ` · ${calendarDateLabel(day)}`;
   document.getElementById('modal-title').textContent = active.title;
 
   if (!active.question) {
@@ -93,7 +115,7 @@ function openDay(day) {
     modal.showModal();
     return;
   }
-  const diag = active.diagram ? `<div class="diagram">${diagrams[active.diagram]}</div>` : '';
+  const diag = active.diagram ? `<div class="diagram">${diagrams[active.diagram]}${active.diagramCredit ? `<p class="diagram-credit">${active.diagramCredit} <a href="https://arasaac.org/pictograms/es/9067/llama" target="_blank" rel="noopener">Font</a> · <a href="https://arasaac.org/terms-of-use" target="_blank" rel="noopener">Llicència</a><br>Il·lustració de l’animal; no representa el recompte del parc.</p>` : ''}</div>` : '';
   content.innerHTML = `${diag}<p class="question">${active.question}</p>
     <div class="choices" id="choices">${active.options.map((s, i) =>
       `<button type="button" class="choice" data-index="${i}" aria-pressed="false"><strong>${labels[i]}</strong><span>${s}</span></button>`
@@ -154,7 +176,6 @@ document.getElementById('reset').addEventListener('click', () => {
 });
 const startBtn = document.getElementById('start');
 if (startBtn) startBtn.addEventListener('click', () => openDay(AdventAccess.availableUntil()));
-document.getElementById('print').addEventListener('click', () => window.print());
 // El panell no apareix en l’URL habitual i no desa la simulació entre visites.
 if (AdventAccess.isAdmin) {
   document.getElementById('admin-panel').hidden = false;
@@ -162,6 +183,10 @@ if (AdventAccess.isAdmin) {
   document.getElementById('preview-date').addEventListener('change', event => {
     if (AdventAccess.simulate(event.target.value)) update();
     else document.getElementById('admin-status').textContent = 'Introdueix una data vàlida per fer la prova.';
+  });
+  document.getElementById('preview-teaser').addEventListener('click', () => {
+    AdventAccess.simulate(`${AdventAccess.year}-11-30`);
+    update();
   });
   document.getElementById('preview-all').addEventListener('click', () => { AdventAccess.showAll(); update(); });
   document.getElementById('preview-real').addEventListener('click', () => { AdventAccess.useRealDate(); update(); });

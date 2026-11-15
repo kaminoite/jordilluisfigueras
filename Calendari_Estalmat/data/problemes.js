@@ -206,7 +206,7 @@ const problems = [
     "title": "La bossa dels símbols",
     "subject": "Lògica",
     "difficulty": 1,
-    "question": "En una bossa hi ha boles marcades amb un dels cinc símbols possibles. N’extraiem sense mirar i sense tornar-les a la bossa. Quantes boles hem d’extreure, com a mínim, per assegurar-nos que entre les extretes n’hi ha dues amb el mateix símbol? Hi ha prou boles de cada símbol.",
+    "question": "En una bossa hi ha cinc tipus de boles, segons el símbol que porten: cercle, triangle, quadrat, pentàgon o hexàgon. Hi ha 10 boles de cada tipus. N’extraiem sense mirar i sense tornar-les a la bossa. Quantes boles hem d’extreure, com a mínim, per assegurar-nos que entre les extretes n’hi ha dues amb el mateix símbol?",
     "options": [
       "4",
       "5",
@@ -220,7 +220,8 @@ const problems = [
     "year": 2018,
     "number": 8,
     "source": "https://cangur.org/cangur/cang2018/informacions/enusol/cangur_1eso_pab.pdf",
-    "model": "PAB"
+    "model": "PAB",
+    "diagram": "simbols"
   },
   {
     "day": 11,
@@ -264,7 +265,8 @@ const problems = [
     "year": 2023,
     "number": 6,
     "source": "https://cangur.org/cang2023/enusol/cangur_2023_primer_dosmodels.pdf",
-    "model": "A"
+    "model": "A",
+    "diagram": "capses"
   },
   {
     "day": 13,
@@ -309,7 +311,8 @@ const problems = [
     "year": 2020,
     "number": 8,
     "source": "https://cangur.org/cangur/cang2020/enusol/primer_2models_2020.pdf",
-    "model": "A"
+    "model": "A",
+    "diagram": "nous"
   },
   {
     "day": 15,
@@ -331,7 +334,8 @@ const problems = [
     "year": 2019,
     "number": 12,
     "source": "https://cangur.org/cangur/cang2019/informacions/enusol/primer.pdf",
-    "model": "PAB"
+    "model": "PAB",
+    "diagram": "dau"
   },
   {
     "day": 16,
@@ -353,7 +357,9 @@ const problems = [
     "year": 2023,
     "number": 12,
     "source": "https://cangur.org/cang2023/enusol/cangur_2023_primer_dosmodels.pdf",
-    "model": "A"
+    "model": "A",
+    "diagram": "llama-arasaac-9067",
+    "diagramCredit": "Pictograma de Sergio Palao · ARASAAC · Propietat del Govern d’Aragó · Llicència CC BY-NC-SA."
   },
   {
     "day": 17,
@@ -427,17 +433,17 @@ const problems = [
     "title": "Qui ha trencat el gerro?",
     "subject": "Lògica",
     "difficulty": 2,
-    "question": "Una sola d’aquestes quatre persones ha trencat un gerro: l’Alba, en Biel, en Cesc o la Dina. L’Alba diu: «Ha estat en Biel». En Biel diu: «Ha estat en Cesc». En Cesc diu: «Jo no he estat». La Dina diu: «Jo no he estat». Només una d’aquestes quatre frases és certa. Qui ha trencat el gerro?",
+    "question": "Una sola d’aquestes quatre persones ha trencat un gerro: n’Alba, en Biel, en Cesc o na Dina. N’Alba diu: «Ha estat en Biel». En Biel diu: «Ha estat en Cesc». En Cesc diu: «Jo no he estat». Na Dina diu: «Jo no he estat». Només una d’aquestes quatre frases és certa. Qui ha trencat el gerro?",
     "options": [
-      "L'Alba",
+      "N’Alba",
       "En Biel",
       "En Cesc",
-      "La Dina",
+      "Na Dina",
       "No es pot saber"
     ],
     "answer": 3,
     "hint": "Suposa successivament que cadascun dels quatre és culpable i compta quantes frases són certes.",
-    "solution": "Si ha estat la Dina, l’Alba i en Biel menteixen, en Cesc diu la veritat i la Dina menteix: només hi ha una frase certa. Si ha estat qualsevol altra persona, hi ha dues o tres frases certes.",
+    "solution": "Si ha estat na Dina, n’Alba i en Biel menteixen, en Cesc diu la veritat i na Dina menteix: només hi ha una frase certa. Si ha estat qualsevol altra persona, hi ha dues o tres frases certes.",
     "year": 2023,
     "number": 14,
     "source": "https://cangur.org/cang2023/enusol/cangur_2023_primer_dosmodels.pdf",

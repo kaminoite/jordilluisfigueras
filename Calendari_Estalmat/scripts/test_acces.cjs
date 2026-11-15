@@ -45,3 +45,9 @@ assert.equal(admin.mode(), 'real');
 assert.equal(admin.availableUntil(), admin.dayLimit(admin.realDate()));
 assert.equal(access('?admin=1').mode(), 'real'); // Cap simulació persistent.
 console.log('OK: obertures diàries, anys, mitjanit a Catalunya, dates invàlides i mode admin.');
+
+for (const [date, days] of [['2026-11-15',16], ['2026-11-30',1], ['2026-12-01',0], ['2027-01-01',0]]) {
+  assert.equal(normal.daysUntilOpening(date), days);
+}
+assert.equal(normal.daysUntilOpening('invalid'), null);
+console.log('OK: compte enrere en dies civils, abans i després de l’estrena.');

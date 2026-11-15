@@ -19,6 +19,9 @@ def build():
     problems = json.loads((ROOT / 'data/problemes.json').read_text(encoding='utf-8'))
     diagrams = {p.stem: p.read_text(encoding='utf-8')
                 for p in sorted((ROOT / 'assets/figures').glob('*.svg'))}
+    # Els pictogrames s’incrusten perquè també funcionin sense connexió.
+    for image in sorted((ROOT / 'assets/figures').glob('*.png')):
+        diagrams[image.stem] = '<img src="' + data_uri(image) + '" alt="Llama" style="width:180px;max-width:100%;height:auto">'
     generated = '// GENERAT per scripts/build.py. Editeu els fitxers font, no aquest fitxer.\n'
     for name, values, destination in [
         ('problems', problems, 'data/problemes.js'),

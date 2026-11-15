@@ -27,7 +27,7 @@ Les 24 opcions marcades eren les previstes sota la interpretació habitual. S’
 | 17 | D · 33 | La capsa sobrant dona 11 × 3 = 33 bombons. | [Cangur 2019, model PAB, núm. 10](https://cangur.org/cangur/cang2019/informacions/enusol/primer.pdf) |
 | 18 | B · 3 | Cada animal es compta dues vegades entre els no-gats, no-gossos i no-tortugues: 2N = 6. | [Cangur 2017, model PAB, núm. 17](https://cangur.org/cangur/cang2017/enusol/cangur2017-primer.pdf) |
 | 19 | D · 34 cm | L’increment constant és (42−22)/(8−3) = 4; 22 + 3×4 = 34. | [Cangur 2022, model A, núm. 21](https://cangur.org/cang2022/enusol/cangur_2022_primer.pdf) |
-| 20 | D · La Dina | Per a Alba/Biel/Cesc/Dina, el nombre de frases certes és 2/3/2/1. | [Cangur 2023, model A, núm. 14](https://cangur.org/cang2023/enusol/cangur_2023_primer_dosmodels.pdf) |
+| 20 | D · Na Dina | Per a Alba/Biel/Cesc/Dina, el nombre de frases certes és 2/3/2/1. | [Cangur 2023, model A, núm. 14](https://cangur.org/cang2023/enusol/cangur_2023_primer_dosmodels.pdf) |
 | 21 | D · 80 cm | Volum: 12 × 0,20 = 2,4 m³; nova alçària: 2,4/3 = 0,8 m. | [Cangur 2022, model A, núm. 20](https://cangur.org/cang2022/enusol/cangur_2022_primer.pdf) |
 | 22 | C · Dilluns | Els dissabtes han de ser 2,9,16,23,30; el 25 és dilluns. | [Cangur 2018, model PAB, núm. 14](https://cangur.org/cangur/cang2018/informacions/enusol/cangur_1eso_pab.pdf) |
 | 23 | B · 4 | Les sumes diferents són 6,11,16,21; quatre resultats. | [Cangur 2023, model A, núm. 23](https://cangur.org/cang2023/enusol/cangur_2023_primer_dosmodels.pdf) |
@@ -43,7 +43,7 @@ Les 24 opcions marcades eren les previstes sota la interpretació habitual. S’
 | 5 | S’especifica que hi ha prou cadenes i que unir-les no afegeix ni treu anelles. |
 | 7 | El pal és vertical, s’insereix al punt més alt i les dues cotes són per damunt del mateix terra. |
 | 8 | Comparacions anuals i edats exactes; justificació de la restricció a anys enters. |
-| 10 | Extraccions sense mirar i sense reposició. |
+| 10 | Cinc símbols dibuixats i anomenats: cercle, triangle, quadrat, pentàgon i hexàgon. Deu boles de cada tipus; extraccions sense mirar i sense reposició. |
 | 14 | La solució dona un trasllat concret que assoleix el mínim de sis nous. |
 | 18 | La solució prova que només hi pot haver tres animals, a més de donar l’exemple. |
 | 19 | S’explicita que cada got afegit fa créixer l’alçària en la mateixa quantitat. |
@@ -66,3 +66,15 @@ La simulació del DOM també ha passat per als 24 diàlegs: cinc opcions, pistes
 S’han afegit proves automàtiques dels 24 dies, abans de l’advent, després del 24 de desembre i en anys posteriors. També s’han comprovat les fronteres de mitjanit a Catalunya, l’hora d’estiu, dates invàlides i l’actualització d’una pestanya oberta.
 
 En la simulació del DOM s’ha comprovat que els botons futurs estan desactivats i que la funció d’obertura també rebutja els dies futurs; que la data simulada modifica el nombre de finestretes obertes; que retrocedir la data tanca un repte que ja no és disponible; i que el mode de proves no escriu al progrés habitual. S’han repetit les comprovacions de respostes, pistes i solucions dels 24 reptes, així com la persistència i el reinici en mode normal. Totes han passat. Les limitacions de la previsualització visual indicades més amunt continuen vigents.
+
+
+## Actualització: portada abans de l’estrena
+
+Abans de l’1 de desembre de 2026, es mostra una portada d’expectativa amb el nombre de dies civils que falten. La graella i el progrés queden ocults ja en l’HTML inicial. L’1 de desembre s’activa el calendari. Després del dia 24 es manté el comportament establert: els reptes continuen disponibles.
+
+La simulació del DOM comprova que el 15 de novembre falten 16 dies; que just abans de la mitjanit del 30 de novembre es mostra «1 dia»; i que en arribar a l’1 de desembre, hora de Catalunya, desapareix la portada i es mostra el calendari amb només el primer dia disponible. També comprova «Mostra la portada», «Obre tots els dies», la data simulada i el retorn a la data real. Les comprovacions han passat; no s’ha fet una revisió visual en navegador.
+
+
+## Articles personals
+
+Els enunciats, les opcions i les solucions empren els articles personals «en» i «na», amb l’apostrofació corresponent («n’Alba»). Les dades matemàtiques i els índexs de resposta es mantenen.

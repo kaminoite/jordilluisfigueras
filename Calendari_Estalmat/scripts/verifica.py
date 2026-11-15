@@ -59,7 +59,7 @@ check(18, str(sum(solutions[0])))
 check(19, f'{22 + (42 - 22) // (8 - 3) * (6 - 3)} cm')
 culprits = [c for c in range(4) if sum([c == 1, c == 2, c != 2, c != 3]) == 1]
 assert culprits == [3]
-check(20, 'La Dina')
+check(20, 'Na Dina')
 check(21, f'{int(3 * 4 * Fraction(20, 100) / (1 * 3) * 100)} cm')
 first_saturdays = [s for s in range(1, 8) if sum(d % 2 == 0 for d in range(s, 31, 7)) == 3]
 assert first_saturdays == [2]

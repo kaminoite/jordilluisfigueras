@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 550 160" role="img" aria-label="Cinc capses de grandàries diferents, ordenades de més petita a més gran, etiquetades A, B, C, D i E." style="display:block;width:100%;max-width:550px;height:auto;margin:auto">
+<g stroke="#185f8e" stroke-width="2" stroke-linejoin="round"><rect x="20" y="90" width="35" height="30" fill="#e4f0fa"/><path d="M20 90 l12 -12 h35 l-12 12 Z" fill="#f5f9fd"/><path d="M55 90 l12 -12 v30 l-12 12 Z" fill="#aacde7"/></g>
+<text x="37.5" y="147" fill="#185f8e" text-anchor="middle" font-family="sans-serif" font-size="16">A</text>
+<g stroke="#185f8e" stroke-width="2" stroke-linejoin="round"><rect x="106" y="80" width="45" height="40" fill="#e4f0fa"/><path d="M106 80 l12 -12 h45 l-12 12 Z" fill="#f5f9fd"/><path d="M151 80 l12 -12 v40 l-12 12 Z" fill="#aacde7"/></g>
+<text x="128.5" y="147" fill="#185f8e" text-anchor="middle" font-family="sans-serif" font-size="16">B</text>
+<g stroke="#185f8e" stroke-width="2" stroke-linejoin="round"><rect x="204" y="68" width="57" height="52" fill="#e4f0fa"/><path d="M204 68 l12 -12 h57 l-12 12 Z" fill="#f5f9fd"/><path d="M261 68 l12 -12 v52 l-12 12 Z" fill="#aacde7"/></g>
+<text x="232.5" y="147" fill="#185f8e" text-anchor="middle" font-family="sans-serif" font-size="16">C</text>
+<g stroke="#185f8e" stroke-width="2" stroke-linejoin="round"><rect x="315" y="56" width="70" height="64" fill="#e4f0fa"/><path d="M315 56 l12 -12 h70 l-12 12 Z" fill="#f5f9fd"/><path d="M385 56 l12 -12 v64 l-12 12 Z" fill="#aacde7"/></g>
+<text x="350.0" y="147" fill="#185f8e" text-anchor="middle" font-family="sans-serif" font-size="16">D</text>
+<g stroke="#185f8e" stroke-width="2" stroke-linejoin="round"><rect x="439" y="42" width="86" height="78" fill="#e4f0fa"/><path d="M439 42 l12 -12 h86 l-12 12 Z" fill="#f5f9fd"/><path d="M525 42 l12 -12 v78 l-12 12 Z" fill="#aacde7"/></g>
+<text x="482.0" y="147" fill="#185f8e" text-anchor="middle" font-family="sans-serif" font-size="16">E</text>
+</svg>

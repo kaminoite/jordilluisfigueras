@@ -37,6 +37,14 @@ const AdventAccess = (() => {
     return isAdmin && allDaysOpen ? totalDays : dayLimit(currentDate());
   }
 
+  // Dies civils fins a l’estrena: no dividim hores locals (canvis d’hora).
+  function daysUntilOpening(isoDate = currentDate()) {
+    if (!validDate(isoDate)) return null;
+    const opening = Date.parse(`${year}-12-01T00:00:00Z`);
+    const day = Date.parse(`${isoDate}T00:00:00Z`);
+    return Math.max(0, Math.round((opening - day) / 86400000));
+  }
+
   function canOpen(day) {
     return Number.isInteger(day) && day >= 1 && day <= availableUntil();
   }
@@ -64,6 +72,6 @@ const AdventAccess = (() => {
 
   return Object.freeze({
     year, timeZone, totalDays, isAdmin, realDate, validDate, dayLimit,
-    currentDate, availableUntil, canOpen, simulate, showAll, useRealDate, mode
+    currentDate, availableUntil, daysUntilOpening, canOpen, simulate, showAll, useRealDate, mode
   });
 })();

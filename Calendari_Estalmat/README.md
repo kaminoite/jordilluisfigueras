@@ -13,12 +13,13 @@ Si vols compartir un únic fitxer, utilitza `dist/Calendari_Estalmat.html`, que 
 | Fitxer o carpeta | Contingut editable |
 | --- | --- |
 | `index.html` | Capçalera, títols, públic destinatari, instruccions i peu amb els logotips |
-| `css/estils.css` | Colors, tipografia, disseny, mòbil i impressió; agrupats en set seccions |
+| `css/estils.css` | Colors, tipografia, disseny, mòbil i impressió; agrupats en vuit seccions |
 | `data/problemes.json` | Els 24 problemes: enunciat, opcions, resposta, pista, solució i font |
 | `assets/figures/*.svg` | Les tres figures geomètriques, en fitxers independents |
 | `assets/` | Logotips d’Estalmat Catalunya, FEEMCAT i SCM |
 | `assets/fonts/` | Tipografies locals Cirka i Titillium Web |
-| `js/acces.js` | Any, zona horària, dates d’obertura i mode de proves |
+| `js/acces.js` | Any, zona horària, dates d’obertura, compte enrere i mode de proves |
+| `js/portada.js` | Alternança entre la portada d’expectativa i el calendari |
 | `js/progres.js` | Lectura i desament del progrés; proves separades del progrés real |
 | `js/calendari.js` | Finestretes, diàleg, respostes, pistes, solucions i botons |
 | `scripts/build.py` | Generació dels fitxers derivats i de l’HTML autocontingut |
@@ -55,7 +56,7 @@ Només es necessita Python 3, sense paquets externs. Si canvies les dades matem�
 
 ## Decisions de funcionament
 
-El calendari correspon al desembre de **2026**. Abans de l’1 de desembre no s’obre cap repte. De l’1 al 24 s’obre el repte del dia i es conserven els anteriors. Després del 24, inclosos els anys següents, tots continuen disponibles. L’obertura segueix la mitjanit de Catalunya (`Europe/Madrid`), a partir del rellotge del dispositiu. Una pestanya oberta es revisa cada 30 segons i en recuperar el focus.
+El calendari correspon al desembre de **2026**. Abans de l’1 de desembre es mostra una portada d’expectativa amb un compte enrere en dies. La graella, el progrés i el botó d’obertura queden ocults des de l’HTML inicial, sense aparèixer breument mentre es carrega la pàgina. Es mantenen visibles la presentació, la informació sobre Estalmat i els tres logotips. L’1 de desembre la portada dona pas automàticament al calendari. De l’1 al 24 s’obre el repte del dia i es conserven els anteriors. Després del 24, inclosos els anys següents, tots continuen disponibles. L’obertura segueix la mitjanit de Catalunya (`Europe/Madrid`), a partir del rellotge del dispositiu. Una pestanya oberta es revisa cada 30 segons i en recuperar el focus.
 
 El fitxer `js/acces.js` concentra l’any i la zona horària. Si canvies l’edició, actualitza també l’any dels textos d’`index.html` i les dates esperades de les proves. El progrés és local a cada navegador; no s’envia a cap servidor. Es conserva la clau d’emmagatzematge anterior per mantenir la compatibilitat si el calendari s’allotja al mateix origen. Obrir-lo des d’una altra ubicació o navegador pot iniciar un progrés nou.
 
@@ -69,11 +70,12 @@ Afegeix `?admin=1` al final de l’adreça, **abans** de qualsevol `#calendari`.
 - Fitxer autònom: `Calendari_Estalmat.html?admin=1`.
 - Si el servidor serveix `index.html` per defecte: `.../calendari/?admin=1`.
 
-Apareix un panell destacat amb quatre opcions:
+Apareix un panell destacat amb les opcions següents:
 
 | Control | Efecte |
 | --- | --- |
 | Data simulada | Permet provar qualsevol data. El 30/11/2026: cap repte; el 05/12/2026: dies 1–5; el 24/12/2026: tots. |
+| Mostra la portada | Simula el 30/11/2026 per comprovar la portada, amb un dia de compte enrere. |
 | Obre tots els dies | Desbloqueja els 24 reptes només en aquesta vista de proves. |
 | Data real | Torna a les obertures corresponents al dia actual; el panell segueix actiu. |
 | Surt del mode de proves | Elimina el paràmetre `admin` i torna a la vista habitual. |
@@ -88,4 +90,13 @@ Per verificar les dates sense instal·lar cap paquet extern, des de la carpeta d
 node scripts/test_acces.cjs
 ```
 
-Les proves cobreixen tots els dies de desembre, el període anterior i posterior, el canvi d’any, la mitjanit a Catalunya, dates invàlides i les opcions d’administració.
+Les proves cobreixen tots els dies de desembre, el període anterior i posterior, el canvi d’any, la mitjanit a Catalunya, dates invàlides, el compte enrere i les opcions d’administració.
+
+
+## Dies de la setmana i autoria
+
+El calendari es distribueix en set columnes, de dilluns a diumenge, amb les dates a la columna que correspon. L’1 de desembre de 2026 és dimarts i el 24 és dijous. Les caselles buides anteriors a l’1 i posteriors al 24 no són interactives. La graella no afegeix nous reptes.
+
+En mòbils s’utilitzen les abreviatures dl., dt., dc., dj., dv., ds. i dg. Les finestretes mostren el número i l’estat; el nom complet del dia i el títol del problema continuen disponibles en l’etiqueta accessible i en obrir el repte. La capçalera dels dies queda oculta juntament amb el calendari abans de l’estrena.
+
+El peu de pàgina inclou el crèdit «Autor: Jordi-Lluís Figueras Romero», visible també a la portada d’expectativa i en imprimir.

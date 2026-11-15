@@ -13,3 +13,11 @@ Identitat visual de referència: [Estalmat Catalunya](https://www.estalmat.cat/)
 | `assets/fonts/TitilliumWeb-700.ttf` | https://fonts.gstatic.com/s/titilliumweb/v19/NaPDcZTIAOhVxoMyOr9n_E7ffHjDGItzZg.ttf |
 
 Els logotips es conserven sense alterar-ne el contingut. Les figures dels problemes provenen del calendari adjunt, amb ajustos de color per harmonitzar-les amb el disseny. La il·lustració de la portada està feta amb HTML i CSS.
+
+## Pictograma del dia 16
+
+Llama, pictograma 9067 de Sergio Palao per a ARASAAC; propietat del Govern d’Aragó. Llicència CC BY-NC-SA. Imatge original sense modificacions, amb crèdit visible al problema.
+
+Font: https://arasaac.org/pictograms/es/9067/llama
+Condicions: https://arasaac.org/terms-of-use
+Fitxer: assets/figures/llama-arasaac-9067.png

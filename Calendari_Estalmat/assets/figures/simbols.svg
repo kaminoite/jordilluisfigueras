@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 110" role="img" aria-label="Cinc símbols: cercle, triangle, quadrat, pentàgon i hexàgon." style="display:block;width:100%;max-width:500px;height:auto;margin:auto">
+  <g fill="#edf5fb" stroke="#185f8e" stroke-width="3" stroke-linejoin="round">
+    <circle cx="50" cy="42" r="24"/>
+    <polygon points="150,15 177,65 123,65"/>
+    <rect x="226" y="18" width="48" height="48"/>
+    <polygon points="350,15 376,34 366,65 334,65 324,34"/>
+    <polygon points="423,42 437,18 463,18 477,42 463,66 437,66"/>
+  </g>
+  <g fill="#185f8e" font-family="sans-serif" font-size="15" text-anchor="middle">
+    <text x="50" y="98">Cercle</text>
+    <text x="150" y="98">Triangle</text>
+    <text x="250" y="98">Quadrat</text>
+    <text x="350" y="98">Pentàgon</text>
+    <text x="450" y="98">Hexàgon</text>
+  </g>
+</svg>
