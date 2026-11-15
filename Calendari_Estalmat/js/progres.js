@@ -2,11 +2,16 @@
 const KEY = 'advent_cangur_1ESO_demo_v1';
 let saved = {};
 try {
-  saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {};
+  if (!AdventAccess.isAdmin) {
+    const stored = JSON.parse(localStorage.getItem(KEY) || '{}');
+    saved = stored && typeof stored === 'object' && !Array.isArray(stored) ? stored : {};
+  }
 } catch (error) {
   saved = {};
 }
 function persist() {
+  // El mode de proves utilitza només memòria temporal: mai no toca el progrés real.
+  if (AdventAccess.isAdmin) return;
   try {
     localStorage.setItem(KEY, JSON.stringify(saved));
   } catch (error) {

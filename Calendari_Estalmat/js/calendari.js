@@ -8,15 +8,53 @@ let chosen = null;
 
 // Actualitza el recompte, la barra de progrés i les finestretes resoltes.
 function update() {
-  const correct = problems.filter(p => saved[p.day] === p.answer).length;
+  const limit = AdventAccess.availableUntil();
+  const correct = problems.filter(p => p.day <= limit && saved[p.day] === p.answer).length;
   document.getElementById('count').textContent = `${correct} de ${problems.length} reptes resolts`;
   document.getElementById('fill').style.width = (correct / problems.length * 100) + '%';
   document.querySelectorAll('.door').forEach(btn => {
     const p = problems[Number(btn.dataset.day) - 1];
-    const won = p.question && saved[p.day] === p.answer;
+    const locked = p.day > limit;
+    const won = !locked && p.question && saved[p.day] === p.answer;
+    const release = `${p.day} de desembre de ${AdventAccess.year}`;
+    btn.disabled = locked;
+    btn.classList.toggle('locked', locked);
     btn.classList.toggle('solved', Boolean(won));
-    btn.querySelector('.door-mark').textContent = won ? '✓' : (p.question ? '✦' : '·');
+    btn.setAttribute('aria-label', locked
+      ? `Dia ${p.day}: disponible el ${release}`
+      : `Dia ${p.day}: ${p.title}${won ? ', resolt' : ''}`);
+    btn.title = locked ? `S’obre el ${release}` : p.title;
+    btn.querySelector('.door-mark').textContent = locked ? '🔒' : (won ? '✓' : '✦');
+    btn.querySelector('.door-label').textContent = locked
+      ? `S’OBRE EL ${String(p.day).padStart(2, '0')}/12`
+      : (p.question ? p.short : p.subject);
   });
+
+  // Si es retrocedeix en la data simulada, tanquem també un repte ja obert.
+  if (active && !AdventAccess.canOpen(active.day)) {
+    if (modal.open) modal.close();
+    content.replaceChildren();
+    active = null;
+    chosen = null;
+  }
+
+  const start = document.getElementById('start');
+  start.disabled = limit === 0;
+  start.textContent = limit === 0 ? 'Comença l’1 de desembre' : `Obre el repte del dia ${limit} ↗`;
+  document.getElementById('availability').textContent = limit === 0
+    ? `El primer repte s’obrirà l’1 de desembre de ${AdventAccess.year}.`
+    : limit === 24
+      ? 'Ja pots obrir els 24 reptes del calendari.'
+      : `${limit} ${limit === 1 ? 'repte disponible' : 'reptes disponibles'}. El següent s’obre el ${limit + 1} de desembre.`;
+
+  if (AdventAccess.isAdmin) {
+    const mode = AdventAccess.mode();
+    const date = AdventAccess.currentDate().split('-').reverse().join('/');
+    document.getElementById('admin-status').textContent = mode === 'all'
+      ? 'Prova: tots els dies oberts. El públic continua veient les obertures segons la data real.'
+      : `${mode === 'date' ? 'Data simulada' : 'Data real a Catalunya'}: ${date}. ${limit} de 24 reptes disponibles.`;
+    document.getElementById('preview-date').value = AdventAccess.currentDate();
+  }
 }
 
 // Crea les 24 finestretes a partir de les dades.
@@ -27,6 +65,7 @@ function render() {
     btn.type = 'button';
     btn.className = 'door' + (!p.question ? ' pending' : '');
     btn.dataset.day = p.day;
+    btn.disabled = !AdventAccess.canOpen(p.day);
     btn.setAttribute('aria-label', `Dia ${p.day}: ${p.title}`);
     btn.innerHTML = `<span class="door-mark">✦</span><span class="door-number">${p.day}</span><span class="door-label">${p.question ? p.short : p.subject}</span>`;
     btn.addEventListener('click', () => openDay(p.day));
@@ -37,6 +76,11 @@ function render() {
 
 // Obre un problema i connecta els botons de resposta, pista i solució.
 function openDay(day) {
+  // No n’hi ha prou amb desactivar el botó: també comprovem l’accés aquí.
+  if (!AdventAccess.canOpen(day) || !problems[day - 1]) {
+    update();
+    return;
+  }
   active = problems[day - 1];
   chosen = null;
   document.getElementById('modal-tag').textContent =
@@ -73,6 +117,7 @@ function openDay(day) {
   }));
 
   document.getElementById('check').addEventListener('click', () => {
+    if (!active || !AdventAccess.canOpen(active.day)) { update(); return; }
     if (chosen === null) return;
     const ok = chosen === active.answer;
     document.getElementById('feedback').innerHTML = `<div class="feedback"><strong>${ok ? 'Correcte!' : 'Encara no.'}</strong> ${ok ? 'Has trobat la resposta.' : 'Pots tornar-ho a provar o consultar la pista.'}</div>`;
@@ -88,9 +133,11 @@ function openDay(day) {
   });
 
   document.getElementById('hint').addEventListener('click', () => {
+    if (!active || !AdventAccess.canOpen(active.day)) { update(); return; }
     document.getElementById('reveals').innerHTML = `<div class="reveal"><strong>Pista ·</strong> ${active.hint}</div>`;
   });
   document.getElementById('solution').addEventListener('click', () => {
+    if (!active || !AdventAccess.canOpen(active.day)) { update(); return; }
     document.getElementById('reveals').innerHTML = `<div class="reveal"><strong>Solució: ${labels[active.answer]}</strong><br>${active.solution}</div>`;
   });
   modal.showModal();
@@ -106,6 +153,25 @@ document.getElementById('reset').addEventListener('click', () => {
   }
 });
 const startBtn = document.getElementById('start');
-if (startBtn) startBtn.addEventListener('click', () => openDay(1));
+if (startBtn) startBtn.addEventListener('click', () => openDay(AdventAccess.availableUntil()));
 document.getElementById('print').addEventListener('click', () => window.print());
+// El panell no apareix en l’URL habitual i no desa la simulació entre visites.
+if (AdventAccess.isAdmin) {
+  document.getElementById('admin-panel').hidden = false;
+  document.getElementById('progress-note').textContent = 'Progrés temporal de prova: no es desa ni modifica el progrés habitual.';
+  document.getElementById('preview-date').addEventListener('change', event => {
+    if (AdventAccess.simulate(event.target.value)) update();
+    else document.getElementById('admin-status').textContent = 'Introdueix una data vàlida per fer la prova.';
+  });
+  document.getElementById('preview-all').addEventListener('click', () => { AdventAccess.showAll(); update(); });
+  document.getElementById('preview-real').addEventListener('click', () => { AdventAccess.useRealDate(); update(); });
+  const normalUrl = new URL(window.location.href);
+  normalUrl.searchParams.delete('admin');
+  document.getElementById('preview-exit').href = normalUrl.href;
+}
+
 render();
+// Una pestanya oberta durant la nit s’actualitza sense haver de recarregar-la.
+setInterval(update, 30000);
+window.addEventListener('focus', update);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) update(); });

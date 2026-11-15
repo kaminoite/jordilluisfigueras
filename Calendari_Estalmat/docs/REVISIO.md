@@ -59,3 +59,10 @@ Dia 6: sis triangles equilàters exteriors i hexàgon central amb etiqueta 3 cm�
 `scripts/verifica.py` comprova els 24 resultats amb càlculs exactes i enumeracions finites, a més de l’estructura de les dades i l’existència de les figures. Per al joc final calcula les posicions guanyadores i perdedores per recurrència; per al gerro enumera les quatre hipòtesis; per a les targetes, les vuit orientacions.
 
 La simulació del DOM també ha passat per als 24 diàlegs: cinc opcions, pistes, solucions, respostes errònies i correctes, finestretes resoltes, barra de progrés, persistència, reinici i botó inicial. S’ha comprovat la sintaxi JavaScript i que l’HTML autocontingut no depèn de fitxers locals externs. La simulació no comprova la disposició visual: no s’ha pogut completar la previsualització en un navegador en aquest entorn.
+
+
+## Actualització: obertura diària i administració
+
+S’han afegit proves automàtiques dels 24 dies, abans de l’advent, després del 24 de desembre i en anys posteriors. També s’han comprovat les fronteres de mitjanit a Catalunya, l’hora d’estiu, dates invàlides i l’actualització d’una pestanya oberta.
+
+En la simulació del DOM s’ha comprovat que els botons futurs estan desactivats i que la funció d’obertura també rebutja els dies futurs; que la data simulada modifica el nombre de finestretes obertes; que retrocedir la data tanca un repte que ja no és disponible; i que el mode de proves no escriu al progrés habitual. S’han repetit les comprovacions de respostes, pistes i solucions dels 24 reptes, així com la persistència i el reinici en mode normal. Totes han passat. Les limitacions de la previsualització visual indicades més amunt continuen vigents.

@@ -245,6 +245,28 @@ dialog::backdrop { background: #173d56a8; backdrop-filter: blur(3px); }
   .partner-logos .footer-estalmat { width: 145px; }
 }
 
+/* 7. Obertura diària i mode de proves. */
+[hidden] { display: none !important; }
+.start:disabled { background: #d7e3eb; color: #465b69; cursor: default; }
+.door.locked { background: #f0f3f5; color: #66757e; border-color: #d6dfe5; cursor: not-allowed; }
+.door.locked:hover { transform: none; box-shadow: none; border-color: #d6dfe5; }
+.door.locked .door-mark { font-size: 14px; }
+.admin-panel { max-width: 1112px; margin: 0 auto 22px; padding: 22px 26px; border: 2px solid #bd8842; border-radius: 22px; background: #fff8e9; color: #513e20; }
+.admin-panel h2 { margin: 0 0 6px; font: 600 29px/1.2 var(--heading); }
+.admin-panel p { margin: 0; font-size: 14px; }
+.admin-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 17px; }
+.admin-controls label { font-size: 14px; font-weight: 600; }
+.admin-controls input { max-width: 100%; min-width: 0; font: inherit; padding: 8px 12px; background: white; border: 1px solid #a8c6da; border-radius: 12px; }
+.admin-controls a { text-decoration: none; }
+.admin-panel #admin-status { margin-top: 14px; font-weight: 600; }
+@media (max-width: 1160px) { .admin-panel { margin-left: 20px; margin-right: 20px; } }
+@media (max-width: 700px) {
+  .admin-panel { margin: 0 12px 18px; padding: 20px; }
+  .admin-controls { align-items: flex-start; }
+  .admin-controls label { flex-basis: 100%; }
+}
+@media print { .admin-controls { display: none !important; } .admin-panel { break-inside: avoid; margin: 12px 0; } }
+
 </style>
 </head>
 <body>
@@ -262,6 +284,22 @@ dialog::backdrop { background: #173d56a8; backdrop-filter: blur(3px); }
     </div>
   </header>
 
+  <!-- Panell de proves: només es mostra si l’adreça inclou ?admin=1. -->
+  <section class="admin-panel" id="admin-panel" aria-labelledby="admin-title" hidden>
+    <div>
+      <h2 id="admin-title">Administració · mode de proves</h2>
+      <p>Simula una data o obre tots els reptes. Les respostes de prova no modifiquen el progrés habitual.</p>
+    </div>
+    <div class="admin-controls">
+      <label for="preview-date">Data simulada</label>
+      <input type="date" id="preview-date" aria-describedby="admin-status">
+      <button type="button" class="textbtn" id="preview-all">Obre tots els dies</button>
+      <button type="button" class="textbtn" id="preview-real">Data real</button>
+      <a class="textbtn" id="preview-exit" href="?">Surt del mode de proves</a>
+    </div>
+    <p id="admin-status" role="status"></p>
+  </section>
+
   <section class="hero" aria-labelledby="page-title">
     <div class="hero-inner">
       <div class="hero-copy">
@@ -269,7 +307,7 @@ dialog::backdrop { background: #173d56a8; backdrop-filter: blur(3px); }
         <h1 id="page-title">Calendari<br><em>Estalmat</em></h1>
         <p class="hero-subtitle">24 dies, 24 reptes per descobrir.</p>
         <p class="lead">Un calendari d’advent per a l’alumnat d’Estalmat Catalunya i per a tothom a qui li agradaria participar-hi en el futur.</p>
-        <button class="start" id="start" type="button">Obre el primer repte <span aria-hidden="true">↗</span></button>
+        <button class="start" id="start" type="button" disabled>Comença l’1 de desembre</button>
         <div class="hero-meta">
           <span>Una idea cada dia</span>
           <span>Sense calculadora</span>
@@ -291,7 +329,7 @@ dialog::backdrop { background: #173d56a8; backdrop-filter: blur(3px); }
     <section class="toolbar" aria-label="El teu progrés">
       <div>
         <strong id="count" aria-live="polite">0 de 24 reptes resolts</strong>
-        <small>El progrés queda desat en aquest navegador.</small>
+        <small id="progress-note">El progrés queda desat en aquest navegador.</small>
         <div class="progressbar" aria-hidden="true"><div class="fill" id="fill"></div></div>
       </div>
       <div class="tools">
@@ -302,7 +340,7 @@ dialog::backdrop { background: #173d56a8; backdrop-filter: blur(3px); }
 
     <div class="section-heading">
       <div><span class="overline">LES MATEMÀTIQUES T’ESPEREN</span><h2>Quin repte obres avui?</h2></div>
-      <p>Tria una finestreta i deixa’t sorprendre.<br>Tots els reptes estan disponibles.</p>
+      <p id="availability" role="status">Cada dia s’obre un repte nou.<br>Els anteriors continuen disponibles.</p>
     </div>
     <section class="calendar" id="calendar" aria-label="Calendari d’advent de 24 dies"></section>
     <noscript><p>Activa el JavaScript del navegador per obrir els reptes del calendari.</p></noscript>
@@ -317,7 +355,7 @@ dialog::backdrop { background: #173d56a8; backdrop-filter: blur(3px); }
       <section>
         <span class="overline">UN REPTE CADA DIA</span>
         <h2>Com funciona?</h2>
-        <p>Cada finestreta conté un problema amb cinc respostes possibles. Pots demanar una pista, comprovar la resposta i consultar-ne la solució raonada. Els reptes resolts queden marcats. Avança al teu ritme!</p>
+        <p>De l’1 al 24 de desembre de 2026, cada dia a mitjanit, hora de Catalunya, s’obre un repte nou. Pots accedir al repte del dia i a tots els anteriors; els futurs queden tancats. Cada finestreta conté un problema amb cinc respostes possibles. Pots demanar una pista, comprovar la resposta i consultar-ne la solució raonada. Els reptes resolts queden marcats. Avança al teu ritme!</p>
         <p class="source-note">Els 24 reptes són adaptacions didàctiques de les proves Cangur de 1r d’ESO dels anys 2017, 2018, 2019, 2020, 2022 i 2023, amb dades o contextos adaptats. Cada repte enllaça la seva font original.</p>
       </section>
     </div>
@@ -889,15 +927,92 @@ const diagrams = {
 
 </script>
 <script>
+/* Dates d’obertura i mode de proves. No hi ha autenticació ni servidor. */
+const AdventAccess = (() => {
+  const year = 2026;
+  const timeZone = 'Europe/Madrid';
+  const totalDays = 24;
+  const isAdmin = new URLSearchParams(window.location.search).get('admin') === '1';
+  let simulatedDate = null;
+  let allDaysOpen = false;
+
+  // Data civil de Catalunya, independent de la zona horària del navegador.
+  function realDate(now = new Date()) {
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone, year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(now);
+    const part = name => parts.find(p => p.type === name).value;
+    return `${part('year')}-${part('month')}-${part('day')}`;
+  }
+
+  function validDate(value) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const date = new Date(`${value}T12:00:00Z`);
+    return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
+  }
+
+  // Els reptes continuen oberts després del 24 de desembre i en anys posteriors.
+  function dayLimit(isoDate) {
+    if (!validDate(isoDate) || isoDate < `${year}-12-01`) return 0;
+    if (isoDate >= `${year}-12-24`) return totalDays;
+    return Number(isoDate.slice(8, 10));
+  }
+
+  function currentDate() {
+    return simulatedDate || realDate();
+  }
+
+  function availableUntil() {
+    return isAdmin && allDaysOpen ? totalDays : dayLimit(currentDate());
+  }
+
+  function canOpen(day) {
+    return Number.isInteger(day) && day >= 1 && day <= availableUntil();
+  }
+
+  // Aquestes opcions només tenen efecte quan s’ha obert la pàgina amb ?admin=1.
+  function simulate(value) {
+    if (!isAdmin || !validDate(value)) return false;
+    simulatedDate = value;
+    allDaysOpen = false;
+    return true;
+  }
+
+  function showAll() {
+    if (isAdmin) allDaysOpen = true;
+  }
+
+  function useRealDate() {
+    simulatedDate = null;
+    allDaysOpen = false;
+  }
+
+  function mode() {
+    return allDaysOpen ? 'all' : (simulatedDate ? 'date' : 'real');
+  }
+
+  return Object.freeze({
+    year, timeZone, totalDays, isAdmin, realDate, validDate, dayLimit,
+    currentDate, availableUntil, canOpen, simulate, showAll, useRealDate, mode
+  });
+})();
+
+</script>
+<script>
 /* Progrés local, compatible amb la versió anterior del calendari. */
 const KEY = 'advent_cangur_1ESO_demo_v1';
 let saved = {};
 try {
-  saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {};
+  if (!AdventAccess.isAdmin) {
+    const stored = JSON.parse(localStorage.getItem(KEY) || '{}');
+    saved = stored && typeof stored === 'object' && !Array.isArray(stored) ? stored : {};
+  }
 } catch (error) {
   saved = {};
 }
 function persist() {
+  // El mode de proves utilitza només memòria temporal: mai no toca el progrés real.
+  if (AdventAccess.isAdmin) return;
   try {
     localStorage.setItem(KEY, JSON.stringify(saved));
   } catch (error) {
@@ -917,15 +1032,53 @@ let chosen = null;
 
 // Actualitza el recompte, la barra de progrés i les finestretes resoltes.
 function update() {
-  const correct = problems.filter(p => saved[p.day] === p.answer).length;
+  const limit = AdventAccess.availableUntil();
+  const correct = problems.filter(p => p.day <= limit && saved[p.day] === p.answer).length;
   document.getElementById('count').textContent = `${correct} de ${problems.length} reptes resolts`;
   document.getElementById('fill').style.width = (correct / problems.length * 100) + '%';
   document.querySelectorAll('.door').forEach(btn => {
     const p = problems[Number(btn.dataset.day) - 1];
-    const won = p.question && saved[p.day] === p.answer;
+    const locked = p.day > limit;
+    const won = !locked && p.question && saved[p.day] === p.answer;
+    const release = `${p.day} de desembre de ${AdventAccess.year}`;
+    btn.disabled = locked;
+    btn.classList.toggle('locked', locked);
     btn.classList.toggle('solved', Boolean(won));
-    btn.querySelector('.door-mark').textContent = won ? '✓' : (p.question ? '✦' : '·');
+    btn.setAttribute('aria-label', locked
+      ? `Dia ${p.day}: disponible el ${release}`
+      : `Dia ${p.day}: ${p.title}${won ? ', resolt' : ''}`);
+    btn.title = locked ? `S’obre el ${release}` : p.title;
+    btn.querySelector('.door-mark').textContent = locked ? '🔒' : (won ? '✓' : '✦');
+    btn.querySelector('.door-label').textContent = locked
+      ? `S’OBRE EL ${String(p.day).padStart(2, '0')}/12`
+      : (p.question ? p.short : p.subject);
   });
+
+  // Si es retrocedeix en la data simulada, tanquem també un repte ja obert.
+  if (active && !AdventAccess.canOpen(active.day)) {
+    if (modal.open) modal.close();
+    content.replaceChildren();
+    active = null;
+    chosen = null;
+  }
+
+  const start = document.getElementById('start');
+  start.disabled = limit === 0;
+  start.textContent = limit === 0 ? 'Comença l’1 de desembre' : `Obre el repte del dia ${limit} ↗`;
+  document.getElementById('availability').textContent = limit === 0
+    ? `El primer repte s’obrirà l’1 de desembre de ${AdventAccess.year}.`
+    : limit === 24
+      ? 'Ja pots obrir els 24 reptes del calendari.'
+      : `${limit} ${limit === 1 ? 'repte disponible' : 'reptes disponibles'}. El següent s’obre el ${limit + 1} de desembre.`;
+
+  if (AdventAccess.isAdmin) {
+    const mode = AdventAccess.mode();
+    const date = AdventAccess.currentDate().split('-').reverse().join('/');
+    document.getElementById('admin-status').textContent = mode === 'all'
+      ? 'Prova: tots els dies oberts. El públic continua veient les obertures segons la data real.'
+      : `${mode === 'date' ? 'Data simulada' : 'Data real a Catalunya'}: ${date}. ${limit} de 24 reptes disponibles.`;
+    document.getElementById('preview-date').value = AdventAccess.currentDate();
+  }
 }
 
 // Crea les 24 finestretes a partir de les dades.
@@ -936,6 +1089,7 @@ function render() {
     btn.type = 'button';
     btn.className = 'door' + (!p.question ? ' pending' : '');
     btn.dataset.day = p.day;
+    btn.disabled = !AdventAccess.canOpen(p.day);
     btn.setAttribute('aria-label', `Dia ${p.day}: ${p.title}`);
     btn.innerHTML = `<span class="door-mark">✦</span><span class="door-number">${p.day}</span><span class="door-label">${p.question ? p.short : p.subject}</span>`;
     btn.addEventListener('click', () => openDay(p.day));
@@ -946,6 +1100,11 @@ function render() {
 
 // Obre un problema i connecta els botons de resposta, pista i solució.
 function openDay(day) {
+  // No n’hi ha prou amb desactivar el botó: també comprovem l’accés aquí.
+  if (!AdventAccess.canOpen(day) || !problems[day - 1]) {
+    update();
+    return;
+  }
   active = problems[day - 1];
   chosen = null;
   document.getElementById('modal-tag').textContent =
@@ -982,6 +1141,7 @@ function openDay(day) {
   }));
 
   document.getElementById('check').addEventListener('click', () => {
+    if (!active || !AdventAccess.canOpen(active.day)) { update(); return; }
     if (chosen === null) return;
     const ok = chosen === active.answer;
     document.getElementById('feedback').innerHTML = `<div class="feedback"><strong>${ok ? 'Correcte!' : 'Encara no.'}</strong> ${ok ? 'Has trobat la resposta.' : 'Pots tornar-ho a provar o consultar la pista.'}</div>`;
@@ -997,9 +1157,11 @@ function openDay(day) {
   });
 
   document.getElementById('hint').addEventListener('click', () => {
+    if (!active || !AdventAccess.canOpen(active.day)) { update(); return; }
     document.getElementById('reveals').innerHTML = `<div class="reveal"><strong>Pista ·</strong> ${active.hint}</div>`;
   });
   document.getElementById('solution').addEventListener('click', () => {
+    if (!active || !AdventAccess.canOpen(active.day)) { update(); return; }
     document.getElementById('reveals').innerHTML = `<div class="reveal"><strong>Solució: ${labels[active.answer]}</strong><br>${active.solution}</div>`;
   });
   modal.showModal();
@@ -1015,9 +1177,28 @@ document.getElementById('reset').addEventListener('click', () => {
   }
 });
 const startBtn = document.getElementById('start');
-if (startBtn) startBtn.addEventListener('click', () => openDay(1));
+if (startBtn) startBtn.addEventListener('click', () => openDay(AdventAccess.availableUntil()));
 document.getElementById('print').addEventListener('click', () => window.print());
+// El panell no apareix en l’URL habitual i no desa la simulació entre visites.
+if (AdventAccess.isAdmin) {
+  document.getElementById('admin-panel').hidden = false;
+  document.getElementById('progress-note').textContent = 'Progrés temporal de prova: no es desa ni modifica el progrés habitual.';
+  document.getElementById('preview-date').addEventListener('change', event => {
+    if (AdventAccess.simulate(event.target.value)) update();
+    else document.getElementById('admin-status').textContent = 'Introdueix una data vàlida per fer la prova.';
+  });
+  document.getElementById('preview-all').addEventListener('click', () => { AdventAccess.showAll(); update(); });
+  document.getElementById('preview-real').addEventListener('click', () => { AdventAccess.useRealDate(); update(); });
+  const normalUrl = new URL(window.location.href);
+  normalUrl.searchParams.delete('admin');
+  document.getElementById('preview-exit').href = normalUrl.href;
+}
+
 render();
+// Una pestanya oberta durant la nit s’actualitza sense haver de recarregar-la.
+setInterval(update, 30000);
+window.addEventListener('focus', update);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) update(); });
 
 </script>
 </body>

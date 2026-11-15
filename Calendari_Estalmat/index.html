@@ -10,6 +10,7 @@
   <!-- Scripts clàssics: el projecte també funciona obrint index.html directament. -->
   <script defer src="data/problemes.js"></script>
   <script defer src="js/diagrames.js"></script>
+  <script defer src="js/acces.js"></script>
   <script defer src="js/progres.js"></script>
   <script defer src="js/calendari.js"></script>
 </head>
@@ -28,6 +29,22 @@
     </div>
   </header>
 
+  <!-- Panell de proves: només es mostra si l’adreça inclou ?admin=1. -->
+  <section class="admin-panel" id="admin-panel" aria-labelledby="admin-title" hidden>
+    <div>
+      <h2 id="admin-title">Administració · mode de proves</h2>
+      <p>Simula una data o obre tots els reptes. Les respostes de prova no modifiquen el progrés habitual.</p>
+    </div>
+    <div class="admin-controls">
+      <label for="preview-date">Data simulada</label>
+      <input type="date" id="preview-date" aria-describedby="admin-status">
+      <button type="button" class="textbtn" id="preview-all">Obre tots els dies</button>
+      <button type="button" class="textbtn" id="preview-real">Data real</button>
+      <a class="textbtn" id="preview-exit" href="?">Surt del mode de proves</a>
+    </div>
+    <p id="admin-status" role="status"></p>
+  </section>
+
   <section class="hero" aria-labelledby="page-title">
     <div class="hero-inner">
       <div class="hero-copy">
@@ -35,7 +52,7 @@
         <h1 id="page-title">Calendari<br><em>Estalmat</em></h1>
         <p class="hero-subtitle">24 dies, 24 reptes per descobrir.</p>
         <p class="lead">Un calendari d’advent per a l’alumnat d’Estalmat Catalunya i per a tothom a qui li agradaria participar-hi en el futur.</p>
-        <button class="start" id="start" type="button">Obre el primer repte <span aria-hidden="true">↗</span></button>
+        <button class="start" id="start" type="button" disabled>Comença l’1 de desembre</button>
         <div class="hero-meta">
           <span>Una idea cada dia</span>
           <span>Sense calculadora</span>
@@ -57,7 +74,7 @@
     <section class="toolbar" aria-label="El teu progrés">
       <div>
         <strong id="count" aria-live="polite">0 de 24 reptes resolts</strong>
-        <small>El progrés queda desat en aquest navegador.</small>
+        <small id="progress-note">El progrés queda desat en aquest navegador.</small>
         <div class="progressbar" aria-hidden="true"><div class="fill" id="fill"></div></div>
       </div>
       <div class="tools">
@@ -68,7 +85,7 @@
 
     <div class="section-heading">
       <div><span class="overline">LES MATEMÀTIQUES T’ESPEREN</span><h2>Quin repte obres avui?</h2></div>
-      <p>Tria una finestreta i deixa’t sorprendre.<br>Tots els reptes estan disponibles.</p>
+      <p id="availability" role="status">Cada dia s’obre un repte nou.<br>Els anteriors continuen disponibles.</p>
     </div>
     <section class="calendar" id="calendar" aria-label="Calendari d’advent de 24 dies"></section>
     <noscript><p>Activa el JavaScript del navegador per obrir els reptes del calendari.</p></noscript>
@@ -83,7 +100,7 @@
       <section>
         <span class="overline">UN REPTE CADA DIA</span>
         <h2>Com funciona?</h2>
-        <p>Cada finestreta conté un problema amb cinc respostes possibles. Pots demanar una pista, comprovar la resposta i consultar-ne la solució raonada. Els reptes resolts queden marcats. Avança al teu ritme!</p>
+        <p>De l’1 al 24 de desembre de 2026, cada dia a mitjanit, hora de Catalunya, s’obre un repte nou. Pots accedir al repte del dia i a tots els anteriors; els futurs queden tancats. Cada finestreta conté un problema amb cinc respostes possibles. Pots demanar una pista, comprovar la resposta i consultar-ne la solució raonada. Els reptes resolts queden marcats. Avança al teu ritme!</p>
         <p class="source-note">Els 24 reptes són adaptacions didàctiques de les proves Cangur de 1r d’ESO dels anys 2017, 2018, 2019, 2020, 2022 i 2023, amb dades o contextos adaptats. Cada repte enllaça la seva font original.</p>
       </section>
     </div>

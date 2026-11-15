@@ -13,15 +13,17 @@ Si vols compartir un únic fitxer, utilitza `dist/Calendari_Estalmat.html`, que 
 | Fitxer o carpeta | Contingut editable |
 | --- | --- |
 | `index.html` | Capçalera, títols, públic destinatari, instruccions i peu amb els logotips |
-| `css/estils.css` | Colors, tipografia, disseny, mòbil i impressió; agrupats en sis seccions |
+| `css/estils.css` | Colors, tipografia, disseny, mòbil i impressió; agrupats en set seccions |
 | `data/problemes.json` | Els 24 problemes: enunciat, opcions, resposta, pista, solució i font |
 | `assets/figures/*.svg` | Les tres figures geomètriques, en fitxers independents |
 | `assets/` | Logotips d’Estalmat Catalunya, FEEMCAT i SCM |
 | `assets/fonts/` | Tipografies locals Cirka i Titillium Web |
-| `js/progres.js` | Lectura i desament del progrés en el navegador |
+| `js/acces.js` | Any, zona horària, dates d’obertura i mode de proves |
+| `js/progres.js` | Lectura i desament del progrés; proves separades del progrés real |
 | `js/calendari.js` | Finestretes, diàleg, respostes, pistes, solucions i botons |
 | `scripts/build.py` | Generació dels fitxers derivats i de l’HTML autocontingut |
 | `scripts/verifica.py` | Comprovacions matemàtiques independents dels 24 resultats |
+| `scripts/test_acces.cjs` | Proves de dates, zona horària i mode admin amb Node.js, sense paquets externs |
 | `docs/REVISIO.md` | Revisió matemàtica, precisions introduïdes i correspondència amb les fonts |
 | `docs/RECURSOS.md` | Procedència dels logotips i les fonts |
 
@@ -53,6 +55,37 @@ Només es necessita Python 3, sense paquets externs. Si canvies les dades matem�
 
 ## Decisions de funcionament
 
-Les 24 finestretes estan disponibles des del principi, igual que en el fitxer original. La data no les bloqueja. El progrés és local a cada navegador; no s’envia a cap servidor. Es conserva la clau d’emmagatzematge anterior per mantenir la compatibilitat si el calendari s’allotja al mateix origen. Obrir-lo des d’una altra ubicació o navegador pot iniciar un progrés nou.
+El calendari correspon al desembre de **2026**. Abans de l’1 de desembre no s’obre cap repte. De l’1 al 24 s’obre el repte del dia i es conserven els anteriors. Després del 24, inclosos els anys següents, tots continuen disponibles. L’obertura segueix la mitjanit de Catalunya (`Europe/Madrid`), a partir del rellotge del dispositiu. Una pestanya oberta es revisa cada 30 segons i en recuperar el focus.
+
+El fitxer `js/acces.js` concentra l’any i la zona horària. Si canvies l’edició, actualitza també l’any dels textos d’`index.html` i les dates esperades de les proves. El progrés és local a cada navegador; no s’envia a cap servidor. Es conserva la clau d’emmagatzematge anterior per mantenir la compatibilitat si el calendari s’allotja al mateix origen. Obrir-lo des d’una altra ubicació o navegador pot iniciar un progrés nou.
 
 Les preguntes continuen sent adaptacions de Cangur de 1r d’ESO. La invitació a participar s’adreça tant a l’alumnat actual d’Estalmat com al futur alumnat i no pressuposa haver fet el programa.
+
+## Mode d’administració per fer proves
+
+Afegeix `?admin=1` al final de l’adreça, **abans** de qualsevol `#calendari`. Si l’adreça ja té paràmetres, afegeix `&admin=1`.
+
+- Projecte modular: `index.html?admin=1`.
+- Fitxer autònom: `Calendari_Estalmat.html?admin=1`.
+- Si el servidor serveix `index.html` per defecte: `.../calendari/?admin=1`.
+
+Apareix un panell destacat amb quatre opcions:
+
+| Control | Efecte |
+| --- | --- |
+| Data simulada | Permet provar qualsevol data. El 30/11/2026: cap repte; el 05/12/2026: dies 1–5; el 24/12/2026: tots. |
+| Obre tots els dies | Desbloqueja els 24 reptes només en aquesta vista de proves. |
+| Data real | Torna a les obertures corresponents al dia actual; el panell segueix actiu. |
+| Surt del mode de proves | Elimina el paràmetre `admin` i torna a la vista habitual. |
+
+El mode de proves s’inicia amb la data real. No conserva la data simulada en recarregar. El seu progrés és temporal i independent: resoldre problemes o reiniciar-lo no modifica el progrés habitual.
+
+És un **mode de previsualització, sense contrasenya ni autenticació**. No comparteixis l’enllaç de proves amb l’alumnat si no vols que hi accedeixi fàcilment. En una web estàtica, els enunciats i les respostes ja són als fitxers descarregats; el bloqueig temporal és de la interfície. No és una protecció contra qui inspeccioni el codi, canviï el rellotge o afegeixi `admin=1`. Per mantenir realment secrets els problemes futurs caldria servir-los des d’un servidor amb data pròpia i autenticació per a l’administració.
+
+Per verificar les dates sense instal·lar cap paquet extern, des de la carpeta del projecte:
+
+```bash
+node scripts/test_acces.cjs
+```
+
+Les proves cobreixen tots els dies de desembre, el període anterior i posterior, el canvi d’any, la mitjanit a Catalunya, dates invàlides i les opcions d’administració.
