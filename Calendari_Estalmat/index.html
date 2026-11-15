@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Calendari Estalmat: 24 reptes matemàtics d’advent per a l’alumnat d’Estalmat Catalunya i per a qui hi vulgui participar en el futur.">
+  <meta name="theme-color" content="#2a8cce">
+  <title>Calendari Estalmat · 24 reptes d’advent</title>
+  <link rel="stylesheet" href="css/estils.css">
+  <!-- Scripts clàssics: el projecte també funciona obrint index.html directament. -->
+  <script defer src="data/problemes.js"></script>
+  <script defer src="js/diagrames.js"></script>
+  <script defer src="js/progres.js"></script>
+  <script defer src="js/calendari.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#calendari">Ves al calendari</a>
+  <header class="sitebar">
+    <div class="sitebar-inner">
+      <a class="brand" href="https://www.estalmat.cat/" target="_blank" rel="noopener" aria-label="Web d’Estalmat Catalunya">
+        <img src="assets/estalmat.svg" width="254" height="74" alt="Estalmat Catalunya">
+      </a>
+      <nav aria-label="Navegació principal">
+        <a href="#calendari">El calendari</a>
+        <a href="#com-funciona">Com funciona?</a>
+        <a href="https://www.estalmat.cat/" target="_blank" rel="noopener">Coneix Estalmat <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" aria-labelledby="page-title">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow">ADVENT 2026 · DE L’1 AL 24 DE DESEMBRE</p>
+        <h1 id="page-title">Calendari<br><em>Estalmat</em></h1>
+        <p class="hero-subtitle">24 dies, 24 reptes per descobrir.</p>
+        <p class="lead">Un calendari d’advent per a l’alumnat d’Estalmat Catalunya i per a tothom a qui li agradaria participar-hi en el futur.</p>
+        <button class="start" id="start" type="button">Obre el primer repte <span aria-hidden="true">↗</span></button>
+        <div class="hero-meta">
+          <span>Una idea cada dia</span>
+          <span>Sense calculadora</span>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="math-orbit orbit-one"></div>
+        <div class="math-orbit orbit-two"></div>
+        <span class="math-symbol symbol-pi">π</span>
+        <span class="math-symbol symbol-infinity">∞</span>
+        <span class="math-symbol symbol-plus">+</span>
+        <div class="advent-card"><span>DESEMBRE</span><strong>24</strong><i>finestretes a les matemàtiques</i></div>
+        <div class="art-label">Imagina. Pensa. Descobreix.</div>
+      </div>
+    </div>
+  </section>
+
+  <main class="wrap" id="calendari">
+    <section class="toolbar" aria-label="El teu progrés">
+      <div>
+        <strong id="count" aria-live="polite">0 de 24 reptes resolts</strong>
+        <small>El progrés queda desat en aquest navegador.</small>
+        <div class="progressbar" aria-hidden="true"><div class="fill" id="fill"></div></div>
+      </div>
+      <div class="tools">
+        <button class="textbtn" id="reset" type="button">Reinicia el progrés</button>
+        <button class="textbtn" id="print" type="button">Imprimeix</button>
+      </div>
+    </section>
+
+    <div class="section-heading">
+      <div><span class="overline">LES MATEMÀTIQUES T’ESPEREN</span><h2>Quin repte obres avui?</h2></div>
+      <p>Tria una finestreta i deixa’t sorprendre.<br>Tots els reptes estan disponibles.</p>
+    </div>
+    <section class="calendar" id="calendar" aria-label="Calendari d’advent de 24 dies"></section>
+    <noscript><p>Activa el JavaScript del navegador per obrir els reptes del calendari.</p></noscript>
+
+    <div class="about" id="com-funciona">
+      <section>
+        <span class="overline">PER A MENTS CURIOSES</span>
+        <h2>Ja fas Estalmat? T’agradaria fer-ne?</h2>
+        <p>Aquest calendari és per a tu. Tant si ja formes part d’Estalmat Catalunya com si t’agradaria participar-hi en el futur, et convidem a explorar, fer proves i gaudir de les matemàtiques. No cal haver fet Estalmat per començar.</p>
+        <a href="https://www.estalmat.cat/" target="_blank" rel="noopener">Descobreix el projecte Estalmat ↗</a>
+      </section>
+      <section>
+        <span class="overline">UN REPTE CADA DIA</span>
+        <h2>Com funciona?</h2>
+        <p>Cada finestreta conté un problema amb cinc respostes possibles. Pots demanar una pista, comprovar la resposta i consultar-ne la solució raonada. Els reptes resolts queden marcats. Avança al teu ritme!</p>
+        <p class="source-note">Els 24 reptes són adaptacions didàctiques de les proves Cangur de 1r d’ESO dels anys 2017, 2018, 2019, 2020, 2022 i 2023, amb dades o contextos adaptats. Cada repte enllaça la seva font original.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-copy"><strong>Calendari Estalmat</strong><p>L’advent matemàtic d’Estalmat Catalunya.</p></div>
+      <div class="partner-logos" aria-label="Estalmat Catalunya, FEEMCAT i Societat Catalana de Matemàtiques">
+        <a href="https://www.estalmat.cat/" target="_blank" rel="noopener"><img class="footer-estalmat" src="assets/estalmat.svg" width="254" height="74" alt="Estalmat Catalunya"></a>
+        <a href="https://feemcat.org/" target="_blank" rel="noopener"><img src="assets/feemcat.png" width="90" height="90" alt="FEEMCAT — Federació d’Entitats per a l’Ensenyament de les Matemàtiques de Catalunya"></a>
+        <a href="https://scm.iec.cat/" target="_blank" rel="noopener"><img src="assets/scm.png" width="90" height="90" alt="SCM — Societat Catalana de Matemàtiques"></a>
+      </div>
+    </div>
+  </footer>
+
+  <dialog id="challenge" aria-labelledby="modal-title" aria-describedby="modal-tag">
+    <div class="modalhead">
+      <div class="tag" id="modal-tag"></div>
+      <h2 id="modal-title"></h2>
+      <button class="close" id="close" type="button" aria-label="Tanca el repte">×</button>
+    </div>
+    <div class="modalbody" id="modal-content"></div>
+  </dialog>
+</body>
+</html>

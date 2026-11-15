@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 255 200" role="img" aria-label="Pal: extrem superior a 92 cm i inferior a 24 cm. El nivell del castell coincideix amb el punt mig del pal." class="problem-svg">
+<path d="M16 179 H243" stroke="#324790" stroke-width="3"/>
+<rect x="48" y="115" width="132" height="64" rx="4" fill="#ffd49b" stroke="#bd6d37" stroke-width="2"/>
+<rect x="68" y="107" width="22" height="12" fill="#ffd49b"/>
+<rect x="145" y="107" width="22" height="12" fill="#ffd49b"/>
+<rect x="102" y="94" width="26" height="24" fill="#ffd49b" stroke="#bd6d37" stroke-width="2"/>
+<path d="M115 43 V144" stroke="#185f8e" stroke-width="4"/>
+<path d="M115 43 L151 56 L115 69 Z" fill="#f28c53"/>
+<path d="M115 43 H224 M115 144 H224 M115 94 H224" stroke="#7d94bf" stroke-dasharray="4 4" stroke-width="1.3"/>
+<text x="192" y="39" font-size="15" fill="#185f8e">92 cm</text>
+<text x="192" y="147" font-size="15" fill="#185f8e">24 cm</text>
+<text x="193" y="90" font-size="18" font-weight="bold" fill="#f28c53">?</text>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" class="problem-svg" role="img" aria-label="Estrella construïda a partir d'un quadrat amb quatre triangles equilàters">
+<g stroke="#185f8e" stroke-width="2.8" stroke-linejoin="round" fill="#cce8f7">
+<polygon points="80,80 140,80 110,28"/>
+<polygon points="140,80 140,140 192,110"/>
+<polygon points="140,140 80,140 110,192"/>
+<polygon points="80,140 80,80 28,110"/>
+</g>
+<rect x="80" y="80" width="60" height="60" fill="#e2ecfc" stroke="#185f8e" stroke-width="3"/>
+<text x="110" y="114" fill="#185f8e" text-anchor="middle" font-size="15" font-weight="bold">8 cm</text>
+</svg>

@@ -1,0 +1,58 @@
+# Calendari Estalmat
+
+Calendari d’advent de 24 reptes per a l’alumnat d’Estalmat Catalunya i per a qui voldria participar-hi en el futur.
+
+## Obrir el calendari
+
+Descomprimeix el projecte i obre `index.html` amb un navegador modern. No cal instal·lar res ni posar en marxa cap servidor. Els problemes, les figures, els logotips i les fonts són locals; només cal connexió per visitar els enllaços externs.
+
+Si vols compartir un únic fitxer, utilitza `dist/Calendari_Estalmat.html`, que conté tots els recursos incorporats.
+
+## On s’edita cada cosa?
+
+| Fitxer o carpeta | Contingut editable |
+| --- | --- |
+| `index.html` | Capçalera, títols, públic destinatari, instruccions i peu amb els logotips |
+| `css/estils.css` | Colors, tipografia, disseny, mòbil i impressió; agrupats en sis seccions |
+| `data/problemes.json` | Els 24 problemes: enunciat, opcions, resposta, pista, solució i font |
+| `assets/figures/*.svg` | Les tres figures geomètriques, en fitxers independents |
+| `assets/` | Logotips d’Estalmat Catalunya, FEEMCAT i SCM |
+| `assets/fonts/` | Tipografies locals Cirka i Titillium Web |
+| `js/progres.js` | Lectura i desament del progrés en el navegador |
+| `js/calendari.js` | Finestretes, diàleg, respostes, pistes, solucions i botons |
+| `scripts/build.py` | Generació dels fitxers derivats i de l’HTML autocontingut |
+| `scripts/verifica.py` | Comprovacions matemàtiques independents dels 24 resultats |
+| `docs/REVISIO.md` | Revisió matemàtica, precisions introduïdes i correspondència amb les fonts |
+| `docs/RECURSOS.md` | Procedència dels logotips i les fonts |
+
+`data/problemes.js`, `js/diagrames.js` i `dist/Calendari_Estalmat.html` són fitxers **generats**. Cal editar les fonts de la taula i regenerar-los; així no hi ha dues còpies per mantenir manualment.
+
+## Modificar un problema
+
+Edita l’objecte corresponent al dia dins de `data/problemes.json`.
+
+- `day`: número de dia, de l’1 al 24.
+- `short`, `title`, `subject`: text de la finestreta, títol i tema.
+- `difficulty`: 1 = fàcil; 2 = intermedi; 3 = repte.
+- `question`, `options`: enunciat i cinc respostes possibles.
+- `answer`: índex de l’opció correcta, començant per **0**: A = 0, B = 1, C = 2, D = 3, E = 4.
+- `hint`, `solution`: pista i explicació raonada.
+- `year`, `model`, `number`, `source`: referència a la prova original del Cangur.
+- `diagram`: nom del fitxer SVG sense extensió, si hi ha figura.
+
+El JSON utilitza cometes dobles i no admet comentaris ni comes després de l’últim element. Els textos s’introdueixen al DOM com a HTML: edita’ls només amb contingut de confiança.
+
+Des de la carpeta del projecte:
+
+```bash
+python3 scripts/build.py
+python3 scripts/verifica.py
+```
+
+Només es necessita Python 3, sense paquets externs. Si canvies les dades matemàtiques d’un problema, actualitza també el càlcul independent corresponent de `verifica.py`.
+
+## Decisions de funcionament
+
+Les 24 finestretes estan disponibles des del principi, igual que en el fitxer original. La data no les bloqueja. El progrés és local a cada navegador; no s’envia a cap servidor. Es conserva la clau d’emmagatzematge anterior per mantenir la compatibilitat si el calendari s’allotja al mateix origen. Obrir-lo des d’una altra ubicació o navegador pot iniciar un progrés nou.
+
+Les preguntes continuen sent adaptacions de Cangur de 1r d’ESO. La invitació a participar s’adreça tant a l’alumnat actual d’Estalmat com al futur alumnat i no pressuposa haver fet el programa.
