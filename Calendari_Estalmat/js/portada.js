@@ -12,11 +12,6 @@ function updateLanding(availableDays) {
   document.getElementById('hero-subtitle').textContent = waiting
     ? 'Aquest desembre, cada dia una descoberta.'
     : '24 dies, 24 reptes per descobrir.';
-  document.getElementById('hero-art-number').textContent = waiting ? '?' : '24';
-  document.getElementById('hero-art-caption').textContent = waiting
-    ? '24 sorpreses per descobrir'
-    : 'finestretes a les matemàtiques';
-
   if (waiting) {
     const days = AdventAccess.daysUntilOpening();
     document.getElementById('countdown').hidden = days === null;

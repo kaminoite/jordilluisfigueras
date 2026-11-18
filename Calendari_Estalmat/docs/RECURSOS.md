@@ -7,12 +7,15 @@ Identitat visual de referència: [Estalmat Catalunya](https://www.estalmat.cat/)
 | `assets/estalmat.svg` | https://www.estalmat.cat/wp-content/uploads/2024/12/group163.svg |
 | `assets/feemcat.png` | https://www.estalmat.cat/wp-content/uploads/2025/01/FEEMCAT_LOGO_rodo.png |
 | `assets/scm.png` | https://www.estalmat.cat/wp-content/uploads/2025/01/SCM_LOGO_rodo.png |
+| `assets/calendari-hero.webp` | Il·lustració facilitada per l’usuari: `Calendari Estalmat 2026_ Un problema cada dia.png` |
 | `assets/fonts/Cirka.ttf` | https://www.estalmat.cat/wp-content/uploads/2024/12/Cirka-Variable-1.ttf |
 | `assets/fonts/TitilliumWeb-400.ttf` | https://fonts.gstatic.com/s/titilliumweb/v19/NaPecZTIAOhVxoMyOr9n_E7fdMPmCA.ttf |
 | `assets/fonts/TitilliumWeb-600.ttf` | https://fonts.gstatic.com/s/titilliumweb/v19/NaPDcZTIAOhVxoMyOr9n_E7ffBzCGItzZg.ttf |
 | `assets/fonts/TitilliumWeb-700.ttf` | https://fonts.gstatic.com/s/titilliumweb/v19/NaPDcZTIAOhVxoMyOr9n_E7ffHjDGItzZg.ttf |
 
-Els logotips es conserven sense alterar-ne el contingut. Les figures dels problemes provenen del calendari adjunt, amb ajustos de color per harmonitzar-les amb el disseny. La il·lustració de la portada està feta amb HTML i CSS.
+Els logotips es conserven sense alterar-ne el contingut. Les figures dels problemes provenen del calendari adjunt, amb ajustos de color per harmonitzar-les amb el disseny.
+
+La il·lustració de la portada és el regal blau amb un calendari i figures matemàtiques de la imatge facilitada per l’usuari. Se n’ha extret només el dibuix, sense els textos incrustats, i se n’ha eliminat el fons blanc per integrar-lo a la portada. S’ha reforçat l’aresta que uneix el vèrtex superior dret de l’icosaedre amb el vèrtex interior, que gairebé es confonia amb el fons. El recurs es desa en WebP amb transparència i queda incorporat també a l’HTML autònom. La composició, el blau fosc i els accents grocs segueixen la maqueta `Estalmat Advent Math Calendar Hero.png`, també facilitada per l’usuari.
 
 ## Pictograma del dia 16
 

@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Calendari Estalmat 2026: 24 reptes matemàtics d’advent per a l’alumnat d’Estalmat Catalunya i per a qui hi vulgui participar en el futur.">
+  <meta name="description" content="Calendari d’Advent Estalmat 2026: 24 reptes adaptats de les proves Cangur per a l’alumnat d’Estalmat Catalunya i per a tothom a qui agradin les matemàtiques.">
   <meta name="theme-color" content="#2a8cce">
-  <title>Calendari Estalmat 2026 · 24 reptes d’advent</title>
+  <title>Calendari d’Advent Estalmat 2026 · 24 reptes matemàtics</title>
   <link rel="stylesheet" href="css/estils.css">
   <!-- Scripts clàssics: el projecte també funciona obrint index.html directament. -->
   <script defer src="data/problemes.js"></script>
@@ -19,9 +19,13 @@
   <a class="skip-link" href="#com-funciona">Ves al contingut</a>
   <header class="sitebar">
     <div class="sitebar-inner">
-      <a class="brand" href="https://www.estalmat.cat/" target="_blank" rel="noopener" aria-label="Web d’Estalmat Catalunya">
-        <img src="assets/estalmat.svg" width="254" height="74" alt="Estalmat Catalunya">
-      </a>
+      <div class="header-logos" aria-label="Estalmat Catalunya, FEEMCAT i Societat Catalana de Matemàtiques">
+        <a class="brand" href="https://www.estalmat.cat/" target="_blank" rel="noopener" aria-label="Web d’Estalmat Catalunya">
+          <img src="assets/estalmat.svg" width="254" height="74" alt="Estalmat Catalunya">
+        </a>
+        <a href="https://feemcat.org/" target="_blank" rel="noopener"><img src="assets/feemcat.png" width="90" height="90" alt="FEEMCAT — Federació d’Entitats per a l’Ensenyament de les Matemàtiques de Catalunya"></a>
+        <a href="https://scm.iec.cat/" target="_blank" rel="noopener"><img src="assets/scm.png" width="90" height="90" alt="SCM — Societat Catalana de Matemàtiques"></a>
+      </div>
       <nav aria-label="Navegació principal">
         <a id="calendar-nav" href="#teaser">Ben aviat</a>
         <a href="#com-funciona">Com funciona?</a>
@@ -51,20 +55,29 @@
     <div class="hero-inner">
       <div class="hero-copy">
         <p class="eyebrow">ADVENT 2026 · DE L’1 AL 24 DE DESEMBRE</p>
-        <h1 id="page-title">Calendari<br><em>Estalmat 2026</em></h1>
+        <h1 id="page-title">
+          <span class="hero-title-line">Calendari d’Advent</span>
+          <em>Estalmat 2026</em>
+        </h1>
         <p class="hero-subtitle" id="hero-subtitle">Aquest desembre, cada dia una descoberta.</p>
-        <p class="lead">Un calendari d’advent per a l’alumnat d’Estalmat Catalunya i per a tothom a qui li agradaria participar-hi en el futur.</p>
+        <p class="lead">Un calendari d’advent per a l’alumnat d’Estalmat Catalunya i per a tothom a qui agradin les matemàtiques. Hi trobaràs 24 reptes adaptats de les proves Cangur de 1r d’ESO.</p>
         <section class="teaser" id="teaser" aria-labelledby="teaser-title">
-          <h2 id="teaser-title">La primera finestreta encara és un secret.</h2>
-          <p>Estem preparant 24 reptes per fer-te pensar, sorprendre’t i descobrir noves idees. T’hi apuntes?</p>
-          <div class="teaser-launch">
-            <div class="countdown" id="countdown" role="status" hidden>
-              <strong id="countdown-days"></strong>
-              <span id="countdown-label">dies per començar</span>
+          <svg class="teaser-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="13" width="46" height="44" rx="7"></rect>
+            <path d="M9 26h46M21 8v12M43 8v12"></path>
+            <path d="M22 37h1m9 0h1m9 0h1M22 47h1m9 0h1m9 0h1"></path>
+          </svg>
+          <div class="teaser-copy">
+            <h2 id="teaser-title">Comença <time datetime="2026-12-01">l’1 de desembre</time>!</h2>
+            <p>Cada dia hi trobaràs un nou problema per pensar, experimentar i gaudir de les matemàtiques.</p>
+            <div class="teaser-actions">
+              <p class="countdown" id="countdown" role="status" hidden>
+                <strong id="countdown-days"></strong>
+                <span id="countdown-label">dies per començar</span>
+              </p>
+              <a class="teaser-link" href="#com-funciona">Descobreix què t’espera <span aria-hidden="true">↓</span></a>
             </div>
-            <p class="launch-date">Obrim la primera finestreta<br><time datetime="2026-12-01">l’1 de desembre de 2026</time>.</p>
           </div>
-          <a class="teaser-link" href="#com-funciona">Descobreix què t’espera <span aria-hidden="true">↓</span></a>
         </section>
         <button class="start" id="start" type="button" disabled hidden>Comença l’1 de desembre</button>
         <div class="hero-meta">
@@ -73,13 +86,7 @@
         </div>
       </div>
       <div class="hero-art" aria-hidden="true">
-        <div class="math-orbit orbit-one"></div>
-        <div class="math-orbit orbit-two"></div>
-        <span class="math-symbol symbol-pi">π</span>
-        <span class="math-symbol symbol-infinity">∞</span>
-        <span class="math-symbol symbol-plus">+</span>
-        <div class="advent-card"><span>DESEMBRE</span><strong id="hero-art-number">?</strong><i id="hero-art-caption">24 sorpreses per descobrir</i></div>
-        <div class="art-label">Imagina. Pensa. Descobreix.</div>
+        <img class="hero-illustration" src="assets/calendari-hero.webp" width="1000" height="820" alt="" decoding="async" fetchpriority="high">
       </div>
     </div>
   </section>
@@ -116,25 +123,32 @@
     </div>
     <noscript><p>El calendari s’obre l’1 de desembre de 2026. Activa el JavaScript del navegador per veure el compte enrere i accedir als reptes quan arribi el dia.</p></noscript>
 
-    <div class="about" id="com-funciona">
-      <section>
-        <span class="overline">PER A MENTS CURIOSES</span>
-        <h2>Ja fas Estalmat? T’agradaria fer-ne?</h2>
-        <p>Aquest calendari és per a tu. Tant si ja formes part d’Estalmat Catalunya com si t’agradaria participar-hi en el futur, et convidem a explorar, fer proves i gaudir de les matemàtiques. No cal haver fet Estalmat per començar.</p>
-        <a href="https://www.estalmat.cat/" target="_blank" rel="noopener">Descobreix el projecte Estalmat ↗</a>
-      </section>
-      <section>
-        <span class="overline">UN REPTE CADA DIA</span>
-        <h2>Com funciona?</h2>
-        <p>De l’1 al 24 de desembre de 2026, cada dia a mitjanit, hora de Catalunya, s’obre un repte nou. Pots accedir al repte del dia i a tots els anteriors; els futurs queden tancats. Cada finestreta conté un problema amb cinc respostes possibles. Pots demanar una pista, comprovar la resposta i consultar-ne la solució raonada. Els reptes resolts queden marcats. Avança al teu ritme!</p>
-        <p class="source-note">Els 24 reptes són adaptacions didàctiques de les proves Cangur de 1r d’ESO dels anys 2017, 2018, 2019, 2020, 2022 i 2023, amb dades o contextos adaptats. Cada repte enllaça la seva font original.</p>
-      </section>
-    </div>
+    <section class="about-section" id="com-funciona" aria-labelledby="about-title">
+      <h2 class="about-title" id="about-title">Com funciona?</h2>
+      <div class="about">
+        <section>
+          <span class="overline">PER A MENTS CURIOSES</span>
+          <h3>T’agraden les matemàtiques?</h3>
+          <p>Tant si ja formes part d’Estalmat Catalunya com si t’agradaria participar-hi en el futur o simplement t’agraden les matemàtiques, et convidem a explorar, fer proves i gaudir-ne. No cal haver fet Estalmat per començar.</p>
+          <a href="https://www.estalmat.cat/" target="_blank" rel="noopener">Descobreix el projecte Estalmat ↗</a>
+        </section>
+        <section>
+          <span class="overline">UN REPTE CADA DIA</span>
+          <h3>Obre una finestreta cada dia</h3>
+          <p>De l’1 al 24 de desembre de 2026, cada dia a mitjanit, hora de Catalunya, s’obre un repte nou. Pots accedir al repte del dia i a tots els anteriors; els futurs queden tancats. Cada finestreta conté un problema amb cinc respostes possibles. Pots demanar una pista, comprovar la resposta i consultar-ne la solució raonada. Els reptes resolts queden marcats. Avança al teu ritme!</p>
+          <p class="source-note">Els 24 reptes són adaptacions didàctiques de les proves Cangur de 1r d’ESO dels anys 2017, 2018, 2019, 2020, 2022 i 2023, amb dades o contextos adaptats. Cada repte enllaça la seva font original.</p>
+        </section>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
     <div class="footer-inner">
-      <div class="footer-copy"><strong>Calendari Estalmat 2026</strong><p>L’advent matemàtic d’Estalmat Catalunya.</p></div>
+      <div class="footer-copy">
+        <strong>Calendari d’Advent Estalmat 2026</strong>
+        <p>L’advent matemàtic d’Estalmat Catalunya.</p>
+        <a class="footer-home" href="../index.html"><span aria-hidden="true">←</span> Torna al web principal</a>
+      </div>
       <div class="partner-logos" aria-label="Estalmat Catalunya, FEEMCAT i Societat Catalana de Matemàtiques">
         <a href="https://www.estalmat.cat/" target="_blank" rel="noopener"><img class="footer-estalmat" src="assets/estalmat.svg" width="254" height="74" alt="Estalmat Catalunya"></a>
         <a href="https://feemcat.org/" target="_blank" rel="noopener"><img src="assets/feemcat.png" width="90" height="90" alt="FEEMCAT — Federació d’Entitats per a l’Ensenyament de les Matemàtiques de Catalunya"></a>

@@ -1,6 +1,6 @@
-# Calendari Estalmat
+# Calendari d’Advent Estalmat
 
-Calendari d’advent de 24 reptes per a l’alumnat d’Estalmat Catalunya i per a qui voldria participar-hi en el futur.
+Calendari d’advent de 24 reptes adaptats de les proves Cangur de 1r d’ESO, per a l’alumnat d’Estalmat Catalunya i per a tothom a qui agradin les matemàtiques.
 
 ## Obrir el calendari
 
@@ -12,11 +12,12 @@ Si vols compartir un únic fitxer, utilitza `dist/Calendari_Estalmat.html`, que 
 
 | Fitxer o carpeta | Contingut editable |
 | --- | --- |
-| `index.html` | Capçalera, títols, públic destinatari, instruccions i peu amb els logotips |
+| `index.html` | Capçalera i peu amb els logotips, títols, públic destinatari i instruccions |
 | `css/estils.css` | Colors, tipografia, disseny, mòbil i impressió; agrupats en vuit seccions |
 | `data/problemes.json` | Els 24 problemes: enunciat, opcions, resposta, pista, solució i font |
 | `assets/figures/*.svg` | Les tres figures geomètriques, en fitxers independents |
 | `assets/` | Logotips d’Estalmat Catalunya, FEEMCAT i SCM |
+| `assets/calendari-hero.webp` | Il·lustració de la portada, amb transparència i sense textos incrustats |
 | `assets/fonts/` | Tipografies locals Cirka i Titillium Web |
 | `js/acces.js` | Any, zona horària, dates d’obertura, compte enrere i mode de proves |
 | `js/portada.js` | Alternança entre la portada d’expectativa i el calendari |
@@ -60,7 +61,7 @@ El calendari correspon al desembre de **2026**. Abans de l’1 de desembre es mo
 
 El fitxer `js/acces.js` concentra l’any i la zona horària. Si canvies l’edició, actualitza també l’any dels textos d’`index.html` i les dates esperades de les proves. El progrés és local a cada navegador; no s’envia a cap servidor. Es conserva la clau d’emmagatzematge anterior per mantenir la compatibilitat si el calendari s’allotja al mateix origen. Obrir-lo des d’una altra ubicació o navegador pot iniciar un progrés nou.
 
-Les preguntes continuen sent adaptacions de Cangur de 1r d’ESO. La invitació a participar s’adreça tant a l’alumnat actual d’Estalmat com al futur alumnat i no pressuposa haver fet el programa.
+Les preguntes continuen sent adaptacions de Cangur de 1r d’ESO, tal com s’indica a la presentació i a «Com funciona?». La invitació a participar s’adreça a l’alumnat actual i futur d’Estalmat i a tothom a qui agradin les matemàtiques; no pressuposa haver fet el programa. Els logotips d’Estalmat Catalunya, FEEMCAT i SCM apareixen tant a la capçalera com al peu.
 
 ## Mode d’administració per fer proves
 
