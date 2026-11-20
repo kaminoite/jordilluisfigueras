@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="UB–UPC reading seminar on positive metric entropy for the standard map." />
+  <title>UB–UPC Reading Seminar: Positive Metric Entropy</title>
+  <link href="../style.css" rel="stylesheet" type="text/css" />
+  <style>
+    .seminarIntro
+    {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 24px;
+    }
+    .seminarIntro figure
+    {
+      margin: 0;
+    }
+    .seminarIntro figcaption
+    {
+      margin-top: 8px;
+      font-size: 12px;
+      text-align: left;
+    }
+    @media(max-width: 700px)
+    {
+      .seminarIntro
+      {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container">
+    <div id="header">Positive Metric Entropy</div>
+    <div id="sub_header">UB–UPC reading seminar</div>
+    <div id="main_content_top"></div>
+    <div id="main_content">
+      <div class="content">
+        <div class="seminarIntro">
+        <div>
+        <h2>Reading seminar</h2>
+        <p>
+          We are running a UB–UPC reading seminar on
+          <a href="https://github.com/openai/math/blob/main/preprints/Positive-Metric-Entropy-for-the-Standard-Map-at-Large-Parameters-September-23-2026/paper.pdf"><em>Positive Metric Entropy for the Standard Map at Large Parameters</em></a>
+          (OpenAI, 23 September 2026).
+          Our aim is to work through the proposed proof together, understand its main mechanisms, and discuss the details critically.
+        </p>
+        <p>
+          The standard map is a basic example of an area-preserving dynamical system in which regular islands and chaotic motion coexist.
+          The paper addresses positive metric entropy with respect to Lebesgue area for sufficiently large parameters:
+          roughly speaking, exponential instability on a set of positive area, rather than just on an exceptional invariant set.
+        </p>
+        <p>
+          We will follow the argument from finite-time derivative growth and cancellation estimates to the semimetric and multiscale framework.
+          This page collects our meeting summaries, notes, and plans; the portrait alongside illustrates the map near golden-mean circle breakup, a different parameter regime from the paper’s large-parameter setting.
+        </p>
+        </div>
+
+        <figure>
+          <a href="standardMapGoldenMean.png">
+            <img src="standardMapGoldenMean.png" alt="Numerical phase portrait of the standard map near golden-mean invariant-circle breakup, showing regular islands and chaotic regions on the unit torus." style="display: block; width: 100%; max-width: 800px; height: auto;" />
+          </a>
+          <figcaption>
+            The standard map near the breakup of the golden-mean invariant circle:
+            <i>K</i> ≈ 0.971635406, with
+            <i>y</i>′ = <i>y</i> + (<i>K</i>/2π) sin(2π<i>x</i>) and
+            <i>x</i>′ = <i>x</i> + <i>y</i>′ (mod 1).
+            In the notes’ notation, this is <i>K</i> = 2π<i>k</i>, so <i>k</i> ≈ 0.15464.
+            Numerical illustration, not a proof of breakup.
+          </figcaption>
+        </figure>
+        </div>
+
+        <h2>Day 1: Wednesday, 18 November 2026 (Leader: Jordi-Lluís Figueras)</h2>
+        <p>
+          <strong>Location:</strong> Universitat de Barcelona (UB), 14:30–16:00.
+        </p>
+        <p>
+          <strong>Summary:</strong> We discussed the material collected in the <a href="summaryPosMetStandardMap.pdf">Day 1 notes (PDF)</a>.
+        </p>
+        <p>
+          We introduced the standard map, its derivative cocycle, growth semimetrics, and the mean growth shortfall <i>e</i><sub>n</sub>(<i>K</i>), including an elementary proof that this shortfall tends to zero as <i>K</i> tends to infinity for each fixed <i>n</i>.
+          We also discussed observations, the cancellation and fast-bridge product estimates, and how these ingredients enter the multiscale contradiction argument for positive metric entropy.
+        </p>
+
+        <h2>Day 2: tentatively Wednesday, 25 November 2026 (Leaders: Marcel Guardia and Jordi-Lluís Figueras)</h2>
+        <p>
+          <strong>Location:</strong> Location and time to be confirmed; the date is also tentative.
+        </p>
+        <p>
+          <strong>Summary:</strong> At our next meeting, we plan to learn the doubling estimate
+        </p>
+        <p class="quote">
+          <i>e</i><sub>n</sub> ≤ <i>e</i><sub>2n</sub> ≤ <i>C</i>(<i>e</i><sub>n</sub> + 1/<i>n</i>),
+        </p>
+        <p>
+          and introduce the general semimetric framework and related ideas needed for the multiscale argument.
+        </p>
+      </div>
+
+      <div class="menu">
+        <div class="menu_title">Notes</div>
+        <ul>
+          <li><a href="summaryPosMetStandardMap.pdf" class="menu_link">Day 1 notes (PDF)</a></li>
+          <li><a href="summaryPosMetStandardMap.tex" class="menu_link">LaTeX source</a></li>
+        </ul>
+      </div>
+
+      <div id="clear"></div>
+    </div>
+    <div id="main_content_bottom"></div>
+    <div id="footer"><strong>Last update: 2026-11-20</strong> | Jordi-Lluís Figueras</div>
+  </div>
+</body>
+</html>
