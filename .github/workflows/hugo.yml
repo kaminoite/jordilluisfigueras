@@ -44,6 +44,7 @@ jobs:
             css images preprints undervisning AI fftw_tutorial interesting skola spain-study-map voronoi miscellanea ReadingGroupUBUPCPositiveMetricEntropy \
             Linkoping_Nov24.pdf lib_TorKam_2.0.0.tar.gz \
             public/
+          rsync -aR Calendari_Estalmat/{index.html,assets,css,data,js} public/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
